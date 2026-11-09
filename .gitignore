@@ -31,3 +31,10 @@ bak/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Node (installer package)
+node_modules/
+npm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
