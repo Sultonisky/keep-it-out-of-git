@@ -17,8 +17,9 @@ if command -v node >/dev/null 2>&1; then
   exec node "$ROOT/bin/keep-it-out-of-git.mjs" "$@"
 fi
 
-echo "Node.js not found — using bash fallback (default init only)."
-echo "Install Node 18+ for full flags, or use: npx github:Sultonisky/keep-it-out-of-git init"
+echo "Node.js not found — using bash fallback (skills + path script only)."
+echo "For full portable core (AGENTS.md + gitleaks.toml + CI workflow), prefer:"
+echo "  npx github:Sultonisky/keep-it-out-of-git init"
 echo
 
 TARGET="${PWD}"
