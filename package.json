@@ -1,6 +1,6 @@
 {
   "name": "keep-it-out-of-git",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Keep people data and secrets out of git — agent skills + project installer",
   "license": "MIT",
   "type": "module",
