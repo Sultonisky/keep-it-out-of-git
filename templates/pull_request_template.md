@@ -32,6 +32,7 @@
 - [ ] No real people-data, financial/health dumps, credentials, `bak/`, or hard-coded real PII
 - [ ] Sensitive operational files stay in gitignored private storage (not git)
 - [ ] New/changed tests & seeders use `Sample…` / `Test…` / Faker only
+- [ ] Demo seeders refuse production; bootstrap secrets come from env/config
 - [ ] Logs / audit diffs never include passwords, PINs, tokens, government IDs, phones, or card data
 - [ ] No infra dumps (sql/tfstate/kubeconfig/HAR) with secrets or PII
 - [ ] Path blocklist / gitleaks (if present) still pass — allowlist changes are narrow and justified
