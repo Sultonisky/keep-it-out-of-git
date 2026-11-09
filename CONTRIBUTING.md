@@ -29,7 +29,16 @@ git clone https://github.com/Sultonisky/keep-it-out-of-git.git
 cd keep-it-out-of-git
 ```
 
-No build step. Skills are markdown + a bash script.
+No build step for skills. The installer is plain Node (`bin/keep-it-out-of-git.mjs`)
+plus `install.sh`.
+
+```bash
+# dry-run installer against cwd
+node bin/keep-it-out-of-git.mjs init --dry-run --all
+
+# or
+npm run test:installer
+```
 
 Optional local check after editing the path script:
 
@@ -38,6 +47,8 @@ bash sensitive-path-guard/scripts/check-sensitive-paths.sh
 ```
 
 (Requires a git repo; run from a throwaway test repo if you need to validate regex changes.)
+
+Installer preference in docs: **npx first**, `install.sh` alternate, manual always OK.
 
 ## Pull request process
 
