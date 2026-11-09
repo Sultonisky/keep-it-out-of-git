@@ -6,6 +6,7 @@
 - [x] Safe-in-git skill: `safe-demo-data` (seeders/factories/fixtures + env guards)
 - [x] Path enforcement: `sensitive-path-guard` + starter script
 - [x] Secret scanning: `gitleaks-guard`
+- [x] Installer: preferred `npx` CLI + alternate `install.sh` + manual guide
 - [x] Portable templates for `AGENTS.md`, CI, PR checklists
 - [x] Shared `.github/pull_request_template.md` drop-in (sensitive-data / security)
 - [x] Document additive Cursor / Copilot wiring (skills, copilot-instructions)
@@ -26,6 +27,8 @@ Cursor/Copilot get smoother presets without locking others out.
 - [ ] Clearer “minimal vs strict” allow/block presets
 - [ ] Feedback-driven wording fixes in `SKILL.md` / templates
 - [ ] Keep Cursor/Copilot template snippets in sync with the core (no policy fork)
+- [ ] Publish `keep-it-out-of-git` to npm (so `npx keep-it-out-of-git` works without GitHub URL)
+- [ ] Installer `update` command (refresh skills without clobbering local edits)
 
 ## Later — deeper tool packs (same rules, richer packaging)
 
