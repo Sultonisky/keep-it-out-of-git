@@ -1,0 +1,33 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Local env / secrets (if any experiments land here)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+*-service-account*.json
+
+# Backups / dumps
+bak/
+*.bak
+*.sql
+*.dump
+*.xlsx
+*.xls
+*.xlsm
+*.ods
+
+# Python / caches if scripts grow later
+__pycache__/
+*.pyc
+.pytest_cache/
