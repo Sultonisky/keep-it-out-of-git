@@ -25,6 +25,7 @@
 - [ ] No real people-data, financial/health dumps, credentials, `bak/`, or hard-coded real PII
 - [ ] Sensitive operational files stay in gitignored private storage (not git)
 - [ ] New/changed examples use `Sample…` / `Test…` / Faker only
+- [ ] Demo seeder guidance includes production refuse + env-based secrets
 - [ ] Logs / docs never include passwords, PINs, tokens, government IDs, phones, or card data
 - [ ] No infra dumps (sql/tfstate/kubeconfig/HAR) with secrets or PII
 - [ ] No product-specific fingerprints from private source repos
