@@ -32,19 +32,26 @@ Preferred:
 
 Alternate (Unix / Git Bash):
   ./install.sh init [options]
-  curl -fsSL https://raw.githubusercontent.com/Sultonisky/keep-it-out-of-git/main/install.sh | bash -s -- init
 
 Commands:
-  init      Install skills + path script into the current project
+  init      Install portable core into the current project
   help      Show this help
 
-Options for init:
-  --cursor       Also copy skills to .cursor/skills/
-  --agents-md    Append/refresh AGENTS.md block (marker-managed)
-  --pr           Copy .github/pull_request_template.md
-  --gitleaks     Write starter gitleaks.toml (if missing, or --force)
-  --ci           Write .github/workflows/sensitive-data.yml starter
-  --all          Enable --cursor --agents-md --pr --gitleaks --ci
+Default init (portable core):
+  skills → .agents/skills/
+  path script → scripts/check-sensitive-paths.sh
+  AGENTS.md block (marker-managed)
+  gitleaks.toml
+  .github/workflows/sensitive-data.yml   (separate workflow; does not edit your existing CI files)
+
+Options:
+  --minimal      Skills + path script only (old bare init)
+  --cursor       Also copy skills → .cursor/skills/
+  --pr           Also copy .github/pull_request_template.md
+  --all          Portable core + --cursor + --pr
+  --agents-md    (redundant) included in default; kept for compatibility
+  --gitleaks     (redundant) included in default
+  --ci           (redundant) included in default
   --force        Overwrite existing managed files
   --dry-run      Print actions without writing
   --target DIR   Project root (default: cwd)
@@ -52,42 +59,48 @@ Options for init:
 }
 
 function parseArgs(argv) {
-  const args = {
-    command: "help",
-    cursor: false,
-    agentsMd: false,
-    pr: false,
-    gitleaks: false,
-    ci: false,
-    force: false,
-    dryRun: false,
-    target: process.cwd(),
-  };
+  const flags = new Set();
+  let target = process.cwd();
+  let command = "help";
 
-  const positional = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--cursor") args.cursor = true;
-    else if (a === "--agents-md") args.agentsMd = true;
-    else if (a === "--pr") args.pr = true;
-    else if (a === "--gitleaks") args.gitleaks = true;
-    else if (a === "--ci") args.ci = true;
-    else if (a === "--all") {
-      args.cursor = args.agentsMd = args.pr = args.gitleaks = args.ci = true;
-    } else if (a === "--force") args.force = true;
-    else if (a === "--dry-run") args.dryRun = true;
+    if (a === "--cursor") flags.add("cursor");
+    else if (a === "--agents-md") flags.add("agentsMd");
+    else if (a === "--pr") flags.add("pr");
+    else if (a === "--gitleaks") flags.add("gitleaks");
+    else if (a === "--ci") flags.add("ci");
+    else if (a === "--all") flags.add("all");
+    else if (a === "--minimal") flags.add("minimal");
+    else if (a === "--force") flags.add("force");
+    else if (a === "--dry-run") flags.add("dryRun");
     else if (a === "--target") {
-      args.target = path.resolve(argv[++i] || "");
-    } else if (a === "--help" || a === "-h") args.command = "help";
+      target = path.resolve(argv[++i] || "");
+    } else if (a === "--help" || a === "-h") command = "help";
     else if (a.startsWith("-")) {
       throw new Error(`Unknown option: ${a}`);
     } else {
-      positional.push(a);
+      command = a;
     }
   }
 
-  if (positional[0]) args.command = positional[0];
-  return args;
+  const all = flags.has("all");
+  const minimal = flags.has("minimal");
+  // Portable core is the default for `init` (skills+script always; docs+guards unless --minimal).
+  const core = !minimal;
+
+  return {
+    command,
+    cursor: all || flags.has("cursor"),
+    agentsMd: all || flags.has("agentsMd") || core,
+    pr: all || flags.has("pr"),
+    gitleaks: all || flags.has("gitleaks") || core,
+    ci: all || flags.has("ci") || core,
+    force: flags.has("force"),
+    dryRun: flags.has("dryRun"),
+    minimal,
+    target,
+  };
 }
 
 function ensureDir(dir, dryRun) {
@@ -134,6 +147,22 @@ function agentsBlock() {
 People data and secrets do not belong in git. Demo seeders/fixtures may stay in
 git only when fictional and environment-guarded.
 
+### Agent: post-install setup required
+
+\`npx … init\` is only a **bootstrap**. It may skip files that already existed.
+Before treating this pack as fully active, the coding agent for **this repo**
+must complete project-specific setup:
+
+1. Read \`.agents/keep-it-out-of-git.POST_INSTALL.md\` (written by the installer)
+2. Audit what was installed vs skipped (AGENTS, gitleaks, CI, path script, skills)
+3. Fill **This repo uses** private-storage path below for this stack
+4. Wire guards into *this* project's real workflow (merge CI steps if the repo
+   already has \`ci-cd.yml\` / \`tests.yml\` instead of relying only on a new workflow)
+5. Adapt \`scripts/check-sensitive-paths.sh\` allow/block regexes to this tree
+6. Apply \`safe-demo-data\` to seeders/factories (fictional rows, production refuse,
+   passwords from env) — do not assume demo data was fixed by init
+7. Ask the human before overwriting existing AGENTS/CI/gitleaks they already tuned
+
 ### Private storage (not git)
 
 - **This repo uses:** \`<FILL: e.g. storage/app/private/ or storage/private/>\`
@@ -142,9 +171,9 @@ git only when fictional and environment-guarded.
 
 ### Guards
 
-- Path check: \`bash scripts/check-sensitive-paths.sh\`
-- Secret scan: gitleaks (see \`gitleaks.toml\` / CI) when enabled
-- Skills (if installed): under \`.agents/skills/\` (and optionally \`.cursor/skills/\`)
+- Path check: \`bash scripts/check-sensitive-paths.sh\` (Git Bash/WSL on Windows)
+- Secret scan: gitleaks (see \`gitleaks.toml\` / CI) when present
+- Skills: \`.agents/skills/\` (optional \`.cursor/skills/\`)
 
 ### Safe demo data
 
@@ -152,8 +181,73 @@ git only when fictional and environment-guarded.
 - Demo seeders must refuse production
 - Bootstrap passwords from env/config — never hardcode live secrets
 
-See skill templates in this pack for full AGENTS snippets.
+Skill details: \`.agents/skills/*/SKILL.md\` and \`templates.md\`.
 ${AGENTS_MARKER_END}
+`;
+}
+
+function postInstallDoc({ minimal, written, skipped }) {
+  const writtenList =
+    written.length > 0
+      ? written.map((p) => `- ${p}`).join("\n")
+      : "- (none written this run)";
+  const skippedList =
+    skipped.length > 0
+      ? skipped.map((p) => `- ${p}`).join("\n")
+      : "- (none skipped)";
+
+  return `# Keep It Out of Git — post-install setup (for coding agents)
+
+**Status: bootstrap only — not fully configured until you finish this checklist.**
+
+The installer may have skipped files because this project already had AGENTS.md,
+CI, gitleaks, or scripts. Do **not** assume every guard is active.
+
+Profile this run: **${minimal ? "minimal" : "portable core"}**
+
+## Written this run
+
+${writtenList}
+
+## Skipped this run (already existed, or not in profile)
+
+${skippedList}
+
+## Required agent tasks (adapt to THIS repo)
+
+1. **Inventory** — Confirm which of these exist and are intended:
+   - \`.agents/skills/sensitive-data-git\`
+   - \`.agents/skills/safe-demo-data\`
+   - \`.agents/skills/sensitive-path-guard\`
+   - \`.agents/skills/gitleaks-guard\`
+   - \`scripts/check-sensitive-paths.sh\`
+   - \`gitleaks.toml\`
+   - \`.github/workflows/sensitive-data.yml\` and/or steps inside existing CI
+   - Keep It Out of Git block in \`AGENTS.md\`
+2. **Private storage** — Set the real gitignored path for this stack in \`AGENTS.md\`
+   (Laravel \`storage/app/private/\`, Nest \`storage/private/\`, etc.).
+3. **Path script** — Adjust allow/block regexes to this tree; run
+   \`bash scripts/check-sensitive-paths.sh\` (Git Bash/WSL on Windows).
+4. **Gitleaks** — If \`gitleaks.toml\` is missing, add it from the skill templates.
+   If the project already has secret scanning, integrate rather than duplicate blindly.
+5. **CI** — Prefer wiring path check + gitleaks into the project's **existing**
+   workflow if one exists; the starter \`sensitive-data.yml\` is optional/additive
+   and must not silently replace \`ci-cd.yml\` / \`tests.yml\`.
+6. **Safe demo data** — Review seeders/factories: fictional identities, refuse
+   production, secrets from env. Init does **not** rewrite application seeders.
+7. **Commit** — \`git add\` the bootstrap files the human wants to keep; open a PR
+   if the default branch is protected.
+8. **Ask before destructive merges** — Do not \`--force\` overwrite human-tuned
+   AGENTS/CI/gitleaks without confirmation.
+
+## Skills to read
+
+- \`.agents/skills/sensitive-data-git/SKILL.md\`
+- \`.agents/skills/safe-demo-data/SKILL.md\`
+- \`.agents/skills/sensitive-path-guard/SKILL.md\`
+- \`.agents/skills/gitleaks-guard/SKILL.md\`
+
+Pack upstream: https://github.com/Sultonisky/keep-it-out-of-git
 `;
 }
 
@@ -250,13 +344,35 @@ jobs:
 `;
 }
 
+function track(result, written, skipped, label) {
+  if (result) written.push(label);
+  else skipped.push(label);
+}
+
+function writePostInstall(target, { minimal, written, skipped, dryRun }) {
+  const dest = path.join(target, ".agents", "keep-it-out-of-git.POST_INSTALL.md");
+  const body = postInstallDoc({ minimal, written, skipped });
+  if (dryRun) {
+    console.log(`[dry-run] write ${dest}`);
+    return;
+  }
+  ensureDir(path.dirname(dest), false);
+  fs.writeFileSync(dest, body, "utf8");
+  console.log(`wrote ${path.relative(process.cwd(), dest)}`);
+}
+
 function initProject(args) {
   const target = args.target;
   const opts = { force: args.force, dryRun: args.dryRun };
+  const written = [];
+  const skipped = [];
 
   console.log(`Keep It Out of Git — init`);
   console.log(`target: ${target}`);
   console.log(`pack:   ${PACK_ROOT}`);
+  console.log(
+    `profile: ${args.minimal ? "minimal (skills + path script)" : "portable core (skills + script + AGENTS + gitleaks + CI workflow)"}`,
+  );
   console.log("");
 
   const agentsSkills = path.join(target, ".agents", "skills");
@@ -267,17 +383,25 @@ function initProject(args) {
     if (!fs.existsSync(src)) {
       throw new Error(`Missing skill in pack: ${skill}`);
     }
-    copyDir(src, path.join(agentsSkills, skill), opts);
+    const dest = path.join(agentsSkills, skill);
+    track(
+      copyDir(src, dest, opts),
+      written,
+      skipped,
+      `.agents/skills/${skill}/`,
+    );
   }
 
   if (args.cursor) {
     const cursorSkills = path.join(target, ".cursor", "skills");
     ensureDir(cursorSkills, args.dryRun);
     for (const skill of SKILLS) {
-      copyDir(
-        path.join(PACK_ROOT, skill),
-        path.join(cursorSkills, skill),
-        opts,
+      const dest = path.join(cursorSkills, skill);
+      track(
+        copyDir(path.join(PACK_ROOT, skill), dest, opts),
+        written,
+        skipped,
+        `.cursor/skills/${skill}/`,
       );
     }
   }
@@ -289,7 +413,12 @@ function initProject(args) {
     "check-sensitive-paths.sh",
   );
   const scriptDest = path.join(target, "scripts", "check-sensitive-paths.sh");
-  copyFile(scriptSrc, scriptDest, opts);
+  track(
+    copyFile(scriptSrc, scriptDest, opts),
+    written,
+    skipped,
+    "scripts/check-sensitive-paths.sh",
+  );
   if (!args.dryRun && fs.existsSync(scriptDest)) {
     try {
       fs.chmodSync(scriptDest, 0o755);
@@ -298,13 +427,36 @@ function initProject(args) {
     }
   }
 
-  if (args.agentsMd) writeAgentsMd(target, opts);
+  if (args.agentsMd) {
+    const agentsFile = path.join(target, "AGENTS.md");
+    const before = fs.existsSync(agentsFile)
+      ? fs.readFileSync(agentsFile, "utf8")
+      : "";
+    writeAgentsMd(target, opts);
+    const after = !args.dryRun && fs.existsSync(agentsFile)
+      ? fs.readFileSync(agentsFile, "utf8")
+      : before;
+    if (args.dryRun) {
+      written.push("AGENTS.md (keep-it-out-of-git block)");
+    } else if (after !== before) {
+      written.push("AGENTS.md (keep-it-out-of-git block)");
+    } else {
+      skipped.push("AGENTS.md (keep-it-out-of-git block)");
+    }
+  } else {
+    skipped.push("AGENTS.md (not in this profile)");
+  }
 
   if (args.pr) {
-    copyFile(
-      path.join(PACK_ROOT, "templates", "pull_request_template.md"),
-      path.join(target, ".github", "pull_request_template.md"),
-      opts,
+    track(
+      copyFile(
+        path.join(PACK_ROOT, "templates", "pull_request_template.md"),
+        path.join(target, ".github", "pull_request_template.md"),
+        opts,
+      ),
+      written,
+      skipped,
+      ".github/pull_request_template.md",
     );
   }
 
@@ -312,12 +464,17 @@ function initProject(args) {
     const dest = path.join(target, "gitleaks.toml");
     if (fs.existsSync(dest) && !args.force) {
       console.log(`skip (exists): gitleaks.toml  (use --force)`);
+      skipped.push("gitleaks.toml");
     } else if (args.dryRun) {
       console.log(`[dry-run] write gitleaks.toml`);
+      written.push("gitleaks.toml");
     } else {
       fs.writeFileSync(dest, gitleaksToml(), "utf8");
       console.log(`wrote gitleaks.toml`);
+      written.push("gitleaks.toml");
     }
+  } else {
+    skipped.push("gitleaks.toml (not in this profile)");
   }
 
   if (args.ci) {
@@ -326,21 +483,43 @@ function initProject(args) {
       console.log(
         `skip (exists): .github/workflows/sensitive-data.yml  (use --force)`,
       );
+      skipped.push(".github/workflows/sensitive-data.yml");
     } else if (args.dryRun) {
       console.log(`[dry-run] write ${dest}`);
+      written.push(".github/workflows/sensitive-data.yml");
     } else {
       ensureDir(path.dirname(dest), false);
       fs.writeFileSync(dest, ciWorkflow(), "utf8");
       console.log(`wrote ${path.relative(process.cwd(), dest)}`);
+      written.push(".github/workflows/sensitive-data.yml");
     }
+  } else {
+    skipped.push(".github/workflows/sensitive-data.yml (not in this profile)");
+  }
+
+  // Always leave agent-facing setup instructions (even when pieces were skipped).
+  writePostInstall(target, {
+    minimal: args.minimal,
+    written,
+    skipped,
+    dryRun: args.dryRun,
+  });
+  if (!args.dryRun) {
+    written.push(".agents/keep-it-out-of-git.POST_INSTALL.md");
   }
 
   console.log(`
-Next steps:
-  1. Fill private-storage path in AGENTS.md (or skill templates)
-  2. Adapt scripts/check-sensitive-paths.sh allow/block regexes
-  3. Run: bash scripts/check-sensitive-paths.sh
-  4. Optional: npx ... init --all   # cursor + AGENTS + pr + gitleaks + ci
+IMPORTANT for coding agents:
+  Init is bootstrap only. Read and follow:
+    .agents/keep-it-out-of-git.POST_INSTALL.md
+  Adapt AGENTS / CI / gitleaks / seeders to THIS project. Skipped files mean the
+  repo already had its own setup — integrate, do not blindly overwrite.
+
+Human next steps:
+  1. Ask your coding agent to complete post-install setup for this repo
+  2. Or follow .agents/keep-it-out-of-git.POST_INSTALL.md yourself
+  3. git add + commit/PR the files you want to keep
+  4. Optional DX: npx ... init --cursor   and/or   init --pr
 
 Manual guide: https://github.com/Sultonisky/keep-it-out-of-git#install
 `);
