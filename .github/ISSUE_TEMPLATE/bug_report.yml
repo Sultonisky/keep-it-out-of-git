@@ -1,0 +1,52 @@
+name: Bug report
+description: Something wrong in skills, templates, or the path script
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste real secrets, PII, or production dumps.** Redact first.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - sensitive-data-git
+        - sensitive-path-guard
+        - gitleaks-guard
+        - templates / PR template
+        - docs (README / ROADMAP / CONTRIBUTING)
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: What happened?
+      description: Expected vs actual behavior
+      placeholder: The path script blocked X but should allow Y because…
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Copy script to a sample repo
+        2. Track file …
+        3. Run bash scripts/check-sensitive-paths.sh
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment (optional)
+      placeholder: OS, bash version, agent tool (Cursor/Copilot/other)
+  - type: checkboxes
+    id: redact
+    attributes:
+      label: Confirmation
+      options:
+        - label: This report contains no real people data or live credentials
+          required: true

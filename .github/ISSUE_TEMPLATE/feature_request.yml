@@ -1,0 +1,50 @@
+name: Feature request
+description: Propose a catalog gap, path pattern, stack preset, or tool pack
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep proposals **generic** (no private product fingerprints). Use fictional examples only.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Request kind
+      options:
+        - Sensitive catalog category
+        - Path-guard regex / file shape
+        - Stack path preset (Nest, Django, …)
+        - Gitleaks / CI template improvement
+        - Cursor / Copilot packaging
+        - Docs / examples
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What gap do agents or users hit today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should we add or change?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+  - type: checkboxes
+    id: portable
+    attributes:
+      label: Portability
+      options:
+        - label: This still works for agents that only read AGENTS.md + CI (not Cursor-only)
+          required: true
+        - label: Examples use Sample… / Test… / Faker only (no real PII)
+          required: true

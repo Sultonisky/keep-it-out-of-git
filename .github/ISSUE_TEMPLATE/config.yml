@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security / secret exposure
+    url: https://github.com/Sultonisky/keep-it-out-of-git/security/advisories/new
+    about: Report secrets or real people data privately — do not file a public issue.
+  - name: Discussions (if enabled)
+    url: https://github.com/Sultonisky/keep-it-out-of-git/discussions
+    about: Questions and ideas that are not bugs or concrete feature requests.

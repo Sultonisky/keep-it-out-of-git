@@ -1,0 +1,44 @@
+name: Catalog gap
+description: A sensitive-data category agents should watch for is missing
+title: "[catalog] "
+labels: ["enhancement", "catalog"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Helps expand `sensitive-data-git/sensitive-catalog.md` for domains beyond
+        current coverage. **Fictional examples only.**
+  - type: input
+    id: category
+    attributes:
+      label: Category name
+      placeholder: e.g. Voice call recordings with customer PII
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why agents miss this today
+    validations:
+      required: true
+  - type: textarea
+    id: signals
+    attributes:
+      label: Path / extension / field signals
+      placeholder: e.g. *.wav under exports/, transcript.json with phone fields
+    validations:
+      required: true
+  - type: textarea
+    id: safe_substitute
+    attributes:
+      label: Safe substitute for fixtures
+      placeholder: Sample Caller One, +15550000099, synthetic audio note
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: No real people data or live credentials in this issue
+          required: true
