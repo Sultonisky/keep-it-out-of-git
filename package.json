@@ -1,0 +1,51 @@
+{
+  "name": "keep-it-out-of-git",
+  "version": "0.1.0",
+  "description": "Keep people data and secrets out of git — agent skills + project installer",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "keep-it-out-of-git": "./bin/keep-it-out-of-git.mjs"
+  },
+  "files": [
+    "bin",
+    "sensitive-data-git",
+    "safe-demo-data",
+    "sensitive-path-guard",
+    "gitleaks-guard",
+    "templates",
+    "install.sh",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    "ROADMAP.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sultonisky/keep-it-out-of-git.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sultonisky/keep-it-out-of-git/issues"
+  },
+  "homepage": "https://github.com/Sultonisky/keep-it-out-of-git#readme",
+  "keywords": [
+    "agents",
+    "skills",
+    "gitleaks",
+    "pii",
+    "secrets",
+    "security",
+    "gitignore",
+    "cursor",
+    "copilot"
+  ],
+  "scripts": {
+    "keep-it-out-of-git": "node ./bin/keep-it-out-of-git.mjs",
+    "test:installer": "node ./bin/keep-it-out-of-git.mjs init --dry-run --all"
+  }
+}
