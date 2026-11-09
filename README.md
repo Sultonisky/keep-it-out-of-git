@@ -54,31 +54,50 @@ You can use **any** of these. Preferred path is marked.
 Works on Windows, macOS, and Linux (Node 18+):
 
 ```bash
-# from your project root
+# from your project root — portable core (recommended)
 npx github:Sultonisky/keep-it-out-of-git init
 ```
+
+**Default `init` installs the portable core** (not skills-only):
+
+| Written | Purpose |
+|---|---|
+| `.agents/skills/*` | Agent skills |
+| `scripts/check-sensitive-paths.sh` | Path blocklist |
+| `AGENTS.md` block | Document private path + guards for agents/humans |
+| `gitleaks.toml` | Secret content scan config |
+| `.github/workflows/sensitive-data.yml` | CI job (separate file — does **not** edit your existing `ci-cd.yml`) |
 
 Common options:
 
 ```bash
 npx github:Sultonisky/keep-it-out-of-git init --cursor
-npx github:Sultonisky/keep-it-out-of-git init --agents-md
+npx github:Sultonisky/keep-it-out-of-git init --pr
 npx github:Sultonisky/keep-it-out-of-git init --all
-npx github:Sultonisky/keep-it-out-of-git init --dry-run --all
+npx github:Sultonisky/keep-it-out-of-git init --minimal
+npx github:Sultonisky/keep-it-out-of-git init --dry-run
 npx github:Sultonisky/keep-it-out-of-git --help
 ```
 
 | Flag | Effect |
 |---|---|
-| *(default)* | Copy skills → `.agents/skills/` + path script → `scripts/` |
+| *(default)* | Portable core (table above) |
+| `--minimal` | Skills + path script only |
 | `--cursor` | Also copy skills → `.cursor/skills/` |
-| `--agents-md` | Create/update marker block in `AGENTS.md` |
-| `--pr` | Copy `.github/pull_request_template.md` |
-| `--gitleaks` | Write starter `gitleaks.toml` |
-| `--ci` | Write `.github/workflows/sensitive-data.yml` |
-| `--all` | All of the above |
+| `--pr` | Also copy `.github/pull_request_template.md` |
+| `--all` | Portable core + `--cursor` + `--pr` |
 | `--force` | Overwrite existing managed files |
 | `--dry-run` | Print actions only |
+
+Files from `init` start **untracked** — `git add` + commit/PR them so CI can run.
+
+**Post-install (required):** `init` is bootstrap only. It writes
+`.agents/keep-it-out-of-git.POST_INSTALL.md` and an AGENTS checklist so **your
+coding agent** can finish project-specific wiring (private path, CI merge,
+gitleaks, safe seeders). Existing `AGENTS.md` / CI files are not blindly
+overwritten — skipped pieces must be integrated by the agent.
+
+On Windows, run the path script via **Git Bash or WSL** (`bash` is not always on PATH in PowerShell).
 
 After npm publish you can also use `npx keep-it-out-of-git init`.
 
