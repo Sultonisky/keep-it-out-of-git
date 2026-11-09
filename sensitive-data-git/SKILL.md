@@ -99,15 +99,12 @@ the file is fully anonymized / non-secret:
 
 ## Tests, factories, seeders, fixtures
 
+Summary (full how-to: [`safe-demo-data`](../safe-demo-data/SKILL.md)):
+
 - Use fictional identities only: `Sample…` / `Test…` labels or Faker/`fake()`
-- Example shapes: `Sample User One`, `user.test@example.com`, `SAMPLE-001`
-- Prefer obvious fake codes (`TST…`, `DEV…`) unless asserting a real product
-  code-prefix generator
-- Demo seeders must be obviously non-production and must not run in
-  `production` without a documented bootstrap exception
-- Do not hard-code real production passwords/PINs; use obviously fake test PINs
-- Before commit: scan the diff for real names, national IDs, phones, and
-  production ID patterns
+- Demo seeders must refuse `production`; secrets from env/config, not literals
+- Prefer obvious fake codes (`TST…`, `DEV…`) unless asserting a product code-prefix
+- Before commit: scan the diff for real names, government IDs, phones, live keys
 
 ## Logging and audit redaction
 
