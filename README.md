@@ -101,13 +101,18 @@ later once feedback lands — see [ROADMAP.md](./ROADMAP.md).
 - No real operational people data in this repo
 - Path checks and gitleaks complement each other — neither replaces the other
 
-## Feedback
+## Community
 
-Issues and PRs welcome — Cursor, Copilot, other agents, CI false
-positives/negatives, and missing templates for your stack.
+| Doc | Purpose |
+|---|---|
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to propose changes, PR process |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Community standards |
+| [SECURITY.md](./SECURITY.md) | Private vulnerability / leak reporting |
+| [ROADMAP.md](./ROADMAP.md) | What’s next |
 
-Keep contributions generic enough that the core stays agent-agnostic. Never add
-real people data or live credentials to examples.
+Issues and PRs welcome — catalog gaps, path false positives/negatives, stack
+presets, and agent/tool feedback. Keep contributions generic; never add real
+people data or live credentials.
 
 ## License
 
