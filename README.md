@@ -3,15 +3,15 @@
 **People data and secrets do not belong in git.**
 
 Agent skills + portable templates to keep PII, credentials, and dumps out of
-version control — predictive across domains (identity, auth, finance, health,
+version control - predictive across domains (identity, auth, finance, health,
 CRM, education, infra), not limited to one product shape.
 
-One portable core for every coding agent — and a smoother path if you already
+One portable core for every coding agent - and a smoother path if you already
 use Cursor or GitHub Copilot. The door stays open for other agents too.
 
 **Author:** [Sultonisky](https://github.com/Sultonisky)  
 **License:** MIT  
-**Stage:** early — ship the general pack, welcome feedback, deepen tool-native
+**Stage:** early - ship the general pack, welcome feedback, deepen tool-native
 packs over time
 
 ## Concept
@@ -23,11 +23,11 @@ packs over time
 ```
 
 - **Core:** prefer gitignored **private** storage + anonymize fixtures + path
-  blocklist + gitleaks — works on any stack / any agent  
-- **Laravel:** first-class path preset (`storage/app/private/`) — smoother defaults  
+  blocklist + gitleaks - works on any stack / any agent  
+- **Laravel:** first-class path preset (`storage/app/private/`) - smoother defaults  
 - **Nest / Express / others:** same rule; pick `storage/private/`, `var/private/`,
   etc., and document it in `AGENTS.md`  
-- **Cursor / Copilot:** additive wiring for nicer discovery — door open to other agents
+- **Cursor / Copilot:** additive wiring for nicer discovery - door open to other agents
 
 ## Skills (use together)
 
@@ -46,12 +46,12 @@ sensitive-data-git          ← what agents/humans should do
 
 Each skill folder has:
 
-- `SKILL.md` — portable agent instructions (read this first)
-- `templates.md` — drop into `AGENTS.md`, CI, PR checklists, IDE instruction files
-- `examples.md` — cross-domain good vs bad decisions
+- `SKILL.md` - portable agent instructions (read this first)
+- `templates.md` - drop into `AGENTS.md`, CI, PR checklists, IDE instruction files
+- `examples.md` - cross-domain good vs bad decisions
 
 `sensitive-data-git` also includes
-[`sensitive-catalog.md`](./sensitive-data-git/sensitive-catalog.md) — a
+[`sensitive-catalog.md`](./sensitive-data-git/sensitive-catalog.md) - a
 predictive taxonomy of sensitive categories agents should watch for.
 
 ## Install
@@ -79,10 +79,10 @@ Do **not** skip the core. These layers make discovery nicer:
 | **GitHub Copilot** | Reuse the same policy in `.github/copilot-instructions.md` |
 | **Other agents** | Point their instruction file at the same `AGENTS.md` blocks |
 
-Same policy, same CI — only the agent entrypoint changes.
+Same policy, same CI - only the agent entrypoint changes.
 
 Deeper vendor packs (Cursor marketplace plugin, richer Copilot layouts) come
-later once feedback lands — see [ROADMAP.md](./ROADMAP.md).
+later once feedback lands - see [ROADMAP.md](./ROADMAP.md).
 
 ## When to use which skill
 
@@ -99,7 +99,7 @@ later once feedback lands — see [ROADMAP.md](./ROADMAP.md).
 - Instructions stay concise; details live in `templates.md` / `examples.md`
 - Examples use fictional identities only (`Sample…` / `Test…`)
 - No real operational people data in this repo
-- Path checks and gitleaks complement each other — neither replaces the other
+- Path checks and gitleaks complement each other - neither replaces the other
 
 ## Community
 
@@ -110,10 +110,10 @@ later once feedback lands — see [ROADMAP.md](./ROADMAP.md).
 | [SECURITY.md](./SECURITY.md) | Private vulnerability / leak reporting |
 | [ROADMAP.md](./ROADMAP.md) | What’s next |
 
-Issues and PRs welcome — catalog gaps, path false positives/negatives, stack
+Issues and PRs welcome - catalog gaps, path false positives/negatives, stack
 presets, and agent/tool feedback. Keep contributions generic; never add real
 people data or live credentials.
 
 ## License
 
-MIT — Copyright (c) 2026 Sultonisky. See [LICENSE](./LICENSE).
+MIT - Copyright (c) 2026 Sultonisky. See [LICENSE](./LICENSE).
