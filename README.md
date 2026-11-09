@@ -3,7 +3,8 @@
 **People data and secrets do not belong in git.**
 
 Agent skills + portable templates to keep PII, credentials, and dumps out of
-version control - predictive across domains (identity, auth, finance, health,
+version control - and to commit **safe** demo seeders/fixtures when you need
+reproducible data. Predictive across domains (identity, auth, finance, health,
 CRM, education, infra), not limited to one product shape.
 
 One portable core for every coding agent - and a smoother path if you already
@@ -22,23 +23,28 @@ packs over time
   (policy + CI + script) └─ Nest/Express/other   ← same rules, mapped paths
 ```
 
-- **Core:** prefer gitignored **private** storage + anonymize fixtures + path
-  blocklist + gitleaks - works on any stack / any agent  
-- **Laravel:** first-class path preset (`storage/app/private/`) - smoother defaults  
-- **Nest / Express / others:** same rule; pick `storage/private/`, `var/private/`,
-  etc., and document it in `AGENTS.md`  
-- **Cursor / Copilot:** additive wiring for nicer discovery - door open to other agents
+Two sides of the same rule:
+
+1. **Keep out** - real people data, live secrets, dumps  
+2. **Safe in git** - fictional seeders/factories/fixtures with env guards  
+
+- **Core:** private storage + anonymize + path blocklist + gitleaks + safe demo data  
+- **Laravel:** first-class presets for private paths and seeders  
+- **Nest / Express / others:** same rules, mapped paths/seed scripts  
+- **Cursor / Copilot:** additive wiring - door open to other agents  
 
 ## Skills (use together)
 
 | Skill | Role |
 |---|---|
-| [`sensitive-data-git`](./sensitive-data-git/) | Policy: prefer local storage, anonymize fixtures, redact logs, commit checklist |
+| [`sensitive-data-git`](./sensitive-data-git/) | Policy: what stays out; private storage; catalog; log redaction |
+| [`safe-demo-data`](./safe-demo-data/) | What may stay **in** git: seeders/factories/fixtures with guards |
 | [`sensitive-path-guard`](./sensitive-path-guard/) | Enforcement: `scripts/check-sensitive-paths.sh` tracked-path blocklist |
 | [`gitleaks-guard`](./gitleaks-guard/) | Enforcement: gitleaks config, CI, allowlist hygiene, finding triage |
 
 ```text
-sensitive-data-git          ← what agents/humans should do
+sensitive-data-git          ← what must stay OUT of git
+safe-demo-data              ← what may stay IN git (safely)
         │
         ├─► sensitive-path-guard   ← block bad tracked paths
         └─► gitleaks-guard         ← scan file contents for secrets
@@ -88,9 +94,10 @@ later once feedback lands - see [ROADMAP.md](./ROADMAP.md).
 
 | Situation | Skill |
 |---|---|
-| Writing seeders/fixtures, import dumps, commit review for PII | `sensitive-data-git` |
-| Adding/fixing path blocklist CI failures | `sensitive-path-guard` |
-| Adding gitleaks or triaging secret findings | `gitleaks-guard` |
+| Commit review, dumps, private storage, “is this sensitive?” | `sensitive-data-git` |
+| Writing/reviewing seeders, factories, fixtures | `safe-demo-data` |
+| Path blocklist CI failures | `sensitive-path-guard` |
+| Gitleaks failures / allowlists | `gitleaks-guard` |
 
 ## Design notes
 
