@@ -11,6 +11,8 @@
 - [x] Stack path presets (Laravel first-class; Nest/Express/generic mapped)
 - [x] Predictive sensitive-data catalog (cross-domain, not one product shape)
 - [x] Broader path-guard patterns (keys, tfstate, HAR, imports/exports, etc.)
+- [x] OSS project hygiene (CONTRIBUTING, CoC, SECURITY, issue/PR templates)
+- [x] GitHub rulesets on the remote (protect `main` + `v*` tags; not tracked in git)
 - [ ] Community feedback: missing categories, false positives, stack gaps
 
 Goal: one core for **any** agent, stack, and product domain; Laravel +
