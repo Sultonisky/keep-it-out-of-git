@@ -15,8 +15,9 @@ Thanks for helping keep people data and secrets out of git.
 | Type | Examples |
 |---|---|
 | Catalog gaps | Missing sensitive categories in `sensitive-catalog.md` |
+| Safe demo data | Better seeder/factory/fixture patterns in `safe-demo-data` |
 | Path patterns | New high-risk path/extension regexes (without product fingerprints) |
-| Stack presets | Nest monorepo, Django, Python services path examples |
+| Stack presets | Nest monorepo, Django, Python services path/seed examples |
 | Docs | Clearer install steps, translations later |
 | Bug reports | False positives/negatives in the path script or templates |
 | Tool packs | Cursor / Copilot packaging (see `ROADMAP.md`) |
