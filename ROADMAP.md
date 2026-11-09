@@ -9,6 +9,7 @@
 - [x] Installer: preferred `npx` CLI + alternate `install.sh` + manual guide
 - [x] Default `init` = portable core (AGENTS + gitleaks + CI workflow); `--minimal` for bare
 - [x] Post-install agent brief (`.agents/keep-it-out-of-git.POST_INSTALL.md` + AGENTS checklist)
+- [x] Copilot-native instructions + INSTALL.json fingerprint; document npx `@main` cache bust
 - [x] Portable templates for `AGENTS.md`, CI, PR checklists
 - [x] Shared `.github/pull_request_template.md` drop-in (sensitive-data / security)
 - [x] Document additive Cursor / Copilot wiring (skills, copilot-instructions)

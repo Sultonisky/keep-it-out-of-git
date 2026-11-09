@@ -55,8 +55,10 @@ Works on Windows, macOS, and Linux (Node 18+):
 
 ```bash
 # from your project root — portable core (recommended)
-npx github:Sultonisky/keep-it-out-of-git init
+npx --yes github:Sultonisky/keep-it-out-of-git@main init
 ```
+
+Use `@main` + `--yes` when re-testing so npx does not reuse a stale cache.
 
 **Default `init` installs the portable core** (not skills-only):
 
@@ -64,9 +66,12 @@ npx github:Sultonisky/keep-it-out-of-git init
 |---|---|
 | `.agents/skills/*` | Agent skills |
 | `scripts/check-sensitive-paths.sh` | Path blocklist |
-| `AGENTS.md` block | Document private path + guards for agents/humans |
+| `AGENTS.md` block | Document private path + guards |
+| `.github/copilot-instructions.md` block | GitHub Copilot discovery (Copilot often ignores `.agents/`) |
 | `gitleaks.toml` | Secret content scan config |
-| `.github/workflows/sensitive-data.yml` | CI job (separate file — does **not** edit your existing `ci-cd.yml`) |
+| `.github/workflows/sensitive-data.yml` | Additive CI workflow (does **not** edit existing `ci-cd.yml`) |
+| `.agents/keep-it-out-of-git.POST_INSTALL.md` | Checklist for the coding agent |
+| `.agents/keep-it-out-of-git.INSTALL.json` | Machine-readable written/skipped + pack version |
 
 Common options:
 
