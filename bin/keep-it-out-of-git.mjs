@@ -23,12 +23,25 @@ const SKILLS = [
 
 const AGENTS_MARKER_START = "<!-- keep-it-out-of-git:start -->";
 const AGENTS_MARKER_END = "<!-- keep-it-out-of-git:end -->";
+const COPILOT_MARKER_START = "<!-- keep-it-out-of-git:start -->";
+const COPILOT_MARKER_END = "<!-- keep-it-out-of-git:end -->";
+
+function packVersion() {
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(PACK_ROOT, "package.json"), "utf8"),
+    );
+    return pkg.version || "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
 
 function printHelp() {
-  console.log(`Keep It Out of Git — installer
+  console.log(`Keep It Out of Git — installer (v${packVersion()})
 
-Preferred:
-  npx github:Sultonisky/keep-it-out-of-git init [options]
+Preferred (bust cache if re-testing):
+  npx --yes github:Sultonisky/keep-it-out-of-git@main init
 
 Alternate (Unix / Git Bash):
   ./install.sh init [options]
@@ -41,17 +54,17 @@ Default init (portable core):
   skills → .agents/skills/
   path script → scripts/check-sensitive-paths.sh
   AGENTS.md block (marker-managed)
+  .github/copilot-instructions.md block (for GitHub Copilot discovery)
   gitleaks.toml
-  .github/workflows/sensitive-data.yml   (separate workflow; does not edit your existing CI files)
+  .github/workflows/sensitive-data.yml
+  .agents/keep-it-out-of-git.POST_INSTALL.md  (agent must finish setup)
+  .agents/keep-it-out-of-git.INSTALL.json     (what this run wrote/skipped)
 
 Options:
-  --minimal      Skills + path script only (old bare init)
+  --minimal      Skills + path script only
   --cursor       Also copy skills → .cursor/skills/
   --pr           Also copy .github/pull_request_template.md
   --all          Portable core + --cursor + --pr
-  --agents-md    (redundant) included in default; kept for compatibility
-  --gitleaks     (redundant) included in default
-  --ci           (redundant) included in default
   --force        Overwrite existing managed files
   --dry-run      Print actions without writing
   --target DIR   Project root (default: cwd)
@@ -67,6 +80,7 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a === "--cursor") flags.add("cursor");
     else if (a === "--agents-md") flags.add("agentsMd");
+    else if (a === "--copilot") flags.add("copilot");
     else if (a === "--pr") flags.add("pr");
     else if (a === "--gitleaks") flags.add("gitleaks");
     else if (a === "--ci") flags.add("ci");
@@ -93,6 +107,8 @@ function parseArgs(argv) {
     command,
     cursor: all || flags.has("cursor"),
     agentsMd: all || flags.has("agentsMd") || core,
+    // Copilot does not reliably read .agents/ — ship instructions into its native file.
+    copilot: all || flags.has("copilot") || core,
     pr: all || flags.has("pr"),
     gitleaks: all || flags.has("gitleaks") || core,
     ci: all || flags.has("ci") || core,
@@ -186,7 +202,7 @@ ${AGENTS_MARKER_END}
 `;
 }
 
-function postInstallDoc({ minimal, written, skipped }) {
+function postInstallDoc({ minimal, written, skipped, version }) {
   const writtenList =
     written.length > 0
       ? written.map((p) => `- ${p}`).join("\n")
@@ -200,8 +216,15 @@ function postInstallDoc({ minimal, written, skipped }) {
 
 **Status: bootstrap only — not fully configured until you finish this checklist.**
 
+Installer version: **${version}**  
+Also see machine-readable: \`.agents/keep-it-out-of-git.INSTALL.json\`
+
 The installer may have skipped files because this project already had AGENTS.md,
 CI, gitleaks, or scripts. Do **not** assume every guard is active.
+
+If \`gitleaks.toml\`, \`AGENTS.md\`, or CI workflow are listed under **Skipped** or
+missing from disk, you must create/wire them for THIS repo (do not only report
+gaps — implement when the human asks to finish setup).
 
 Profile this run: **${minimal ? "minimal" : "portable core"}**
 
@@ -215,30 +238,22 @@ ${skippedList}
 
 ## Required agent tasks (adapt to THIS repo)
 
-1. **Inventory** — Confirm which of these exist and are intended:
-   - \`.agents/skills/sensitive-data-git\`
-   - \`.agents/skills/safe-demo-data\`
-   - \`.agents/skills/sensitive-path-guard\`
-   - \`.agents/skills/gitleaks-guard\`
-   - \`scripts/check-sensitive-paths.sh\`
-   - \`gitleaks.toml\`
-   - \`.github/workflows/sensitive-data.yml\` and/or steps inside existing CI
-   - Keep It Out of Git block in \`AGENTS.md\`
-2. **Private storage** — Set the real gitignored path for this stack in \`AGENTS.md\`
-   (Laravel \`storage/app/private/\`, Nest \`storage/private/\`, etc.).
-3. **Path script** — Adjust allow/block regexes to this tree; run
-   \`bash scripts/check-sensitive-paths.sh\` (Git Bash/WSL on Windows).
-4. **Gitleaks** — If \`gitleaks.toml\` is missing, add it from the skill templates.
-   If the project already has secret scanning, integrate rather than duplicate blindly.
-5. **CI** — Prefer wiring path check + gitleaks into the project's **existing**
-   workflow if one exists; the starter \`sensitive-data.yml\` is optional/additive
-   and must not silently replace \`ci-cd.yml\` / \`tests.yml\`.
-6. **Safe demo data** — Review seeders/factories: fictional identities, refuse
-   production, secrets from env. Init does **not** rewrite application seeders.
-7. **Commit** — \`git add\` the bootstrap files the human wants to keep; open a PR
-   if the default branch is protected.
-8. **Ask before destructive merges** — Do not \`--force\` overwrite human-tuned
-   AGENTS/CI/gitleaks without confirmation.
+1. **Verify install freshness** — Read INSTALL.json. If \`packVersion\` is older than
+   upstream or written[] lacks gitleaks/AGENTS/CI while profile is portable core,
+   ask human to re-run:
+   \`npx --yes github:Sultonisky/keep-it-out-of-git@main init --force\`
+2. **Inventory** — Confirm which guards exist on disk (not from memory/prior chats).
+3. **Private storage** — Set the real gitignored path in \`AGENTS.md\`.
+4. **Path script** — Adapt regexes; run \`bash scripts/check-sensitive-paths.sh\`
+   (Git Bash/WSL on Windows PowerShell).
+5. **Gitleaks** — Ensure \`gitleaks.toml\` exists; integrate with existing scanners.
+6. **CI** — If \`ci-cd.yml\` / \`tests.yml\` already exist, **add steps there** (or
+   keep additive \`sensitive-data.yml\`). Do not claim CI is missing without checking
+   both the new workflow and existing pipelines.
+7. **Safe demo data** — Fix seeders/factories (fictional, refuse production, env
+   passwords). Init never rewrites app seeders.
+8. **Copilot** — Follow \`.github/copilot-instructions.md\` Keep It Out of Git block.
+9. **Commit** — \`git add\` + PR; ask before force-overwriting tuned files.
 
 ## Skills to read
 
@@ -251,44 +266,84 @@ Pack upstream: https://github.com/Sultonisky/keep-it-out-of-git
 `;
 }
 
-function writeAgentsMd(target, { force, dryRun }) {
-  const file = path.join(target, "AGENTS.md");
-  const block = agentsBlock();
-
+function upsertMarkedFile(file, block, startMarker, endMarker, { force, dryRun }, createTitle) {
   if (!fs.existsSync(file)) {
     if (dryRun) {
       console.log(`[dry-run] create ${file}`);
-      return;
+      return "written";
     }
-    fs.writeFileSync(file, `# Agent instructions\n\n${block}\n`, "utf8");
+    ensureDir(path.dirname(file), false);
+    const body = createTitle ? `${createTitle}\n\n${block}\n` : `${block}\n`;
+    fs.writeFileSync(file, body, "utf8");
     console.log(`wrote ${path.relative(process.cwd(), file)}`);
-    return;
+    return "written";
   }
 
   const current = fs.readFileSync(file, "utf8");
-  const start = current.indexOf(AGENTS_MARKER_START);
-  const end = current.indexOf(AGENTS_MARKER_END);
+  const start = current.indexOf(startMarker);
+  const end = current.indexOf(endMarker);
 
   let next;
   if (start !== -1 && end !== -1 && end > start) {
     if (!force) {
-      console.log(`skip (AGENTS.md block exists): use --force to refresh`);
-      return;
+      console.log(
+        `skip (${path.relative(process.cwd(), file)} block exists): use --force to refresh`,
+      );
+      return "skipped";
     }
     next =
-      current.slice(0, start) +
-      block +
-      current.slice(end + AGENTS_MARKER_END.length);
+      current.slice(0, start) + block + current.slice(end + endMarker.length);
   } else {
     next = `${current.trimEnd()}\n\n${block}\n`;
   }
 
   if (dryRun) {
     console.log(`[dry-run] update ${file}`);
-    return;
+    return "written";
   }
   fs.writeFileSync(file, next, "utf8");
   console.log(`updated ${path.relative(process.cwd(), file)}`);
+  return "written";
+}
+
+function writeAgentsMd(target, opts) {
+  return upsertMarkedFile(
+    path.join(target, "AGENTS.md"),
+    agentsBlock(),
+    AGENTS_MARKER_START,
+    AGENTS_MARKER_END,
+    opts,
+    "# Agent instructions",
+  );
+}
+
+function copilotBlock() {
+  return `${COPILOT_MARKER_START}
+## Keep It Out of Git (required follow-up)
+
+Bootstrap may be incomplete if this repo already had AGENTS/CI/gitleaks.
+
+1. Read \`.agents/keep-it-out-of-git.POST_INSTALL.md\` and
+   \`.agents/keep-it-out-of-git.INSTALL.json\` first.
+2. Do not assume every guard file was written — check INSTALL.json written vs skipped.
+3. Complete project-specific setup: private storage path, path-script regexes,
+   gitleaks, CI wiring into *existing* workflows if present, safe-demo-data for seeders.
+4. Skills live under \`.agents/skills/\` (sensitive-data-git, safe-demo-data,
+   sensitive-path-guard, gitleaks-guard). Read those SKILL.md files when relevant.
+5. Ask before overwriting human-tuned AGENTS/CI/gitleaks.
+${COPILOT_MARKER_END}
+`;
+}
+
+function writeCopilotMd(target, opts) {
+  return upsertMarkedFile(
+    path.join(target, ".github", "copilot-instructions.md"),
+    copilotBlock(),
+    COPILOT_MARKER_START,
+    COPILOT_MARKER_END,
+    opts,
+    "# GitHub Copilot instructions",
+  );
 }
 
 function gitleaksToml() {
@@ -349,15 +404,51 @@ function track(result, written, skipped, label) {
   else skipped.push(label);
 }
 
-function writePostInstall(target, { minimal, written, skipped, dryRun }) {
+function writePostInstall(target, { minimal, written, skipped, dryRun, version }) {
   const dest = path.join(target, ".agents", "keep-it-out-of-git.POST_INSTALL.md");
-  const body = postInstallDoc({ minimal, written, skipped });
+  const body = postInstallDoc({ minimal, written, skipped, version });
   if (dryRun) {
     console.log(`[dry-run] write ${dest}`);
     return;
   }
   ensureDir(path.dirname(dest), false);
   fs.writeFileSync(dest, body, "utf8");
+  console.log(`wrote ${path.relative(process.cwd(), dest)}`);
+}
+
+function writeInstallJson(target, { minimal, written, skipped, dryRun, version }) {
+  const dest = path.join(target, ".agents", "keep-it-out-of-git.INSTALL.json");
+  const payload = {
+    pack: "keep-it-out-of-git",
+    packVersion: version,
+    profile: minimal ? "minimal" : "portable-core",
+    installedAt: new Date().toISOString(),
+    written,
+    skipped,
+    agentMustRead: [
+      ".agents/keep-it-out-of-git.POST_INSTALL.md",
+      ".agents/keep-it-out-of-git.INSTALL.json",
+      ".github/copilot-instructions.md",
+      "AGENTS.md",
+    ],
+    verifyOnDisk: [
+      ".agents/skills/sensitive-data-git/SKILL.md",
+      ".agents/skills/safe-demo-data/SKILL.md",
+      ".agents/skills/sensitive-path-guard/SKILL.md",
+      ".agents/skills/gitleaks-guard/SKILL.md",
+      "scripts/check-sensitive-paths.sh",
+      "gitleaks.toml",
+      ".github/workflows/sensitive-data.yml",
+      "AGENTS.md",
+      ".github/copilot-instructions.md",
+    ],
+  };
+  if (dryRun) {
+    console.log(`[dry-run] write ${dest}`);
+    return;
+  }
+  ensureDir(path.dirname(dest), false);
+  fs.writeFileSync(dest, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   console.log(`wrote ${path.relative(process.cwd(), dest)}`);
 }
 
@@ -428,23 +519,22 @@ function initProject(args) {
   }
 
   if (args.agentsMd) {
-    const agentsFile = path.join(target, "AGENTS.md");
-    const before = fs.existsSync(agentsFile)
-      ? fs.readFileSync(agentsFile, "utf8")
-      : "";
-    writeAgentsMd(target, opts);
-    const after = !args.dryRun && fs.existsSync(agentsFile)
-      ? fs.readFileSync(agentsFile, "utf8")
-      : before;
-    if (args.dryRun) {
-      written.push("AGENTS.md (keep-it-out-of-git block)");
-    } else if (after !== before) {
-      written.push("AGENTS.md (keep-it-out-of-git block)");
-    } else {
-      skipped.push("AGENTS.md (keep-it-out-of-git block)");
-    }
+    const status = writeAgentsMd(target, opts);
+    if (status === "written") written.push("AGENTS.md (keep-it-out-of-git block)");
+    else skipped.push("AGENTS.md (keep-it-out-of-git block)");
   } else {
     skipped.push("AGENTS.md (not in this profile)");
+  }
+
+  if (args.copilot) {
+    const status = writeCopilotMd(target, opts);
+    if (status === "written") {
+      written.push(".github/copilot-instructions.md (keep-it-out-of-git block)");
+    } else {
+      skipped.push(".github/copilot-instructions.md (keep-it-out-of-git block)");
+    }
+  } else {
+    skipped.push(".github/copilot-instructions.md (not in this profile)");
   }
 
   if (args.pr) {
@@ -497,29 +587,52 @@ function initProject(args) {
     skipped.push(".github/workflows/sensitive-data.yml (not in this profile)");
   }
 
+  const version = packVersion();
+
   // Always leave agent-facing setup instructions (even when pieces were skipped).
   writePostInstall(target, {
     minimal: args.minimal,
-    written,
-    skipped,
+    written: [...written],
+    skipped: [...skipped],
     dryRun: args.dryRun,
+    version,
   });
-  if (!args.dryRun) {
-    written.push(".agents/keep-it-out-of-git.POST_INSTALL.md");
-  }
+  written.push(".agents/keep-it-out-of-git.POST_INSTALL.md");
+
+  writeInstallJson(target, {
+    minimal: args.minimal,
+    written: [...written],
+    skipped: [...skipped],
+    dryRun: args.dryRun,
+    version,
+  });
+  written.push(".agents/keep-it-out-of-git.INSTALL.json");
+
+  const expectCore = [
+    "scripts/check-sensitive-paths.sh",
+    "gitleaks.toml",
+    "AGENTS.md",
+    ".github/copilot-instructions.md",
+    ".github/workflows/sensitive-data.yml",
+    ".agents/keep-it-out-of-git.POST_INSTALL.md",
+  ];
 
   console.log(`
 IMPORTANT for coding agents:
-  Init is bootstrap only. Read and follow:
+  Init is bootstrap only (pack v${version}). Read:
     .agents/keep-it-out-of-git.POST_INSTALL.md
-  Adapt AGENTS / CI / gitleaks / seeders to THIS project. Skipped files mean the
-  repo already had its own setup — integrate, do not blindly overwrite.
+    .agents/keep-it-out-of-git.INSTALL.json
+  Verify files on disk (do not reuse prior-chat summaries). Skipped = integrate.
+
+Expected portable-core artifacts:
+${expectCore.map((p) => `  - ${p}`).join("\n")}
 
 Human next steps:
-  1. Ask your coding agent to complete post-install setup for this repo
-  2. Or follow .agents/keep-it-out-of-git.POST_INSTALL.md yourself
+  1. Re-test with cache bust if artifacts missing:
+       npx --yes github:Sultonisky/keep-it-out-of-git@main init
+  2. Ask your coding agent to finish POST_INSTALL for this repo
   3. git add + commit/PR the files you want to keep
-  4. Optional DX: npx ... init --cursor   and/or   init --pr
+  4. Optional: init --cursor   and/or   init --pr
 
 Manual guide: https://github.com/Sultonisky/keep-it-out-of-git#install
 `);
