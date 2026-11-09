@@ -3,16 +3,16 @@
 **People data and secrets do not belong in git.**
 
 Agent skills + portable templates to keep PII, credentials, and dumps out of
-version control - and to commit **safe** demo seeders/fixtures when you need
+version control — and to commit **safe** demo seeders/fixtures when you need
 reproducible data. Predictive across domains (identity, auth, finance, health,
 CRM, education, infra), not limited to one product shape.
 
-One portable core for every coding agent - and a smoother path if you already
+One portable core for every coding agent — and a smoother path if you already
 use Cursor or GitHub Copilot. The door stays open for other agents too.
 
 **Author:** [Sultonisky](https://github.com/Sultonisky)  
 **License:** MIT  
-**Stage:** early - ship the general pack, welcome feedback, deepen tool-native
+**Stage:** early — ship the general pack, welcome feedback, deepen tool-native
 packs over time
 
 ## Concept
@@ -25,13 +25,8 @@ packs over time
 
 Two sides of the same rule:
 
-1. **Keep out** - real people data, live secrets, dumps  
-2. **Safe in git** - fictional seeders/factories/fixtures with env guards  
-
-- **Core:** private storage + anonymize + path blocklist + gitleaks + safe demo data  
-- **Laravel:** first-class presets for private paths and seeders  
-- **Nest / Express / others:** same rules, mapped paths/seed scripts  
-- **Cursor / Copilot:** additive wiring - door open to other agents  
+1. **Keep out** — real people data, live secrets, dumps  
+2. **Safe in git** — fictional seeders/factories/fixtures with env guards  
 
 ## Skills (use together)
 
@@ -50,45 +45,76 @@ safe-demo-data              ← what may stay IN git (safely)
         └─► gitleaks-guard         ← scan file contents for secrets
 ```
 
-Each skill folder has:
-
-- `SKILL.md` - portable agent instructions (read this first)
-- `templates.md` - drop into `AGENTS.md`, CI, PR checklists, IDE instruction files
-- `examples.md` - cross-domain good vs bad decisions
-
-`sensitive-data-git` also includes
-[`sensitive-catalog.md`](./sensitive-data-git/sensitive-catalog.md) - a
-predictive taxonomy of sensitive categories agents should watch for.
-
 ## Install
 
-### 1. Portable core (every agent)
+You can use **any** of these. Preferred path is marked.
 
-1. Copy policy blocks from each skill’s `templates.md` into repo `AGENTS.md`
-2. Copy
+### Preferred — `npx` (cross-platform)
+
+Works on Windows, macOS, and Linux (Node 18+):
+
+```bash
+# from your project root
+npx github:Sultonisky/keep-it-out-of-git init
+```
+
+Common options:
+
+```bash
+npx github:Sultonisky/keep-it-out-of-git init --cursor
+npx github:Sultonisky/keep-it-out-of-git init --agents-md
+npx github:Sultonisky/keep-it-out-of-git init --all
+npx github:Sultonisky/keep-it-out-of-git init --dry-run --all
+npx github:Sultonisky/keep-it-out-of-git --help
+```
+
+| Flag | Effect |
+|---|---|
+| *(default)* | Copy skills → `.agents/skills/` + path script → `scripts/` |
+| `--cursor` | Also copy skills → `.cursor/skills/` |
+| `--agents-md` | Create/update marker block in `AGENTS.md` |
+| `--pr` | Copy `.github/pull_request_template.md` |
+| `--gitleaks` | Write starter `gitleaks.toml` |
+| `--ci` | Write `.github/workflows/sensitive-data.yml` |
+| `--all` | All of the above |
+| `--force` | Overwrite existing managed files |
+| `--dry-run` | Print actions only |
+
+After npm publish you can also use `npx keep-it-out-of-git init`.
+
+### Alternate — `install.sh` (Unix / Git Bash)
+
+Use when you already cloned the repo or prefer a shell entrypoint.
+If Node is available, the script **delegates to the same CLI** as npx.
+
+```bash
+git clone https://github.com/Sultonisky/keep-it-out-of-git.git
+cd your-project
+bash /path/to/keep-it-out-of-git/install.sh init --cursor
+```
+
+Without Node, bash falls back to a **default init only** (skills + path script).
+Full flags → use the preferred `npx` path.
+
+### Manual — clone + guided copy
+
+1. Clone this repository (or browse the skill folders online)
+2. Copy skill folders into your project:
+   - Portable: `.agents/skills/<skill-name>/`
+   - Cursor (optional): `.cursor/skills/<skill-name>/`
+3. Copy
    [`sensitive-path-guard/scripts/check-sensitive-paths.sh`](./sensitive-path-guard/scripts/check-sensitive-paths.sh)
    → `scripts/check-sensitive-paths.sh` and adapt allow/block regexes
-3. Add `gitleaks.toml` + CI job from [`gitleaks-guard/templates.md`](./gitleaks-guard/templates.md)
-4. Copy [`templates/pull_request_template.md`](./templates/pull_request_template.md)
-   → `.github/pull_request_template.md` (sensitive-data / security checklist on every PR)
+4. Paste policy blocks from each skill’s `templates.md` into `AGENTS.md`
+5. Optional: `gitleaks.toml`, CI job, and
+   [`templates/pull_request_template.md`](./templates/pull_request_template.md)
+   → `.github/pull_request_template.md`
 
-CI + PR checklist enforce what prompts alone cannot. Any agent that reads
-`AGENTS.md` can follow the same rules.
+### After install (all methods)
 
-### 2. Better DX on Cursor / Copilot (optional, additive)
-
-Do **not** skip the core. These layers make discovery nicer:
-
-| If you use | Also do |
-|---|---|
-| **Cursor** | Copy skill folders → `.cursor/skills/` and/or add a rule from templates |
-| **GitHub Copilot** | Reuse the same policy in `.github/copilot-instructions.md` |
-| **Other agents** | Point their instruction file at the same `AGENTS.md` blocks |
-
-Same policy, same CI - only the agent entrypoint changes.
-
-Deeper vendor packs (Cursor marketplace plugin, richer Copilot layouts) come
-later once feedback lands - see [ROADMAP.md](./ROADMAP.md).
+1. Document **this repo’s** private storage path in `AGENTS.md`
+2. Run `bash scripts/check-sensitive-paths.sh`
+3. Point your agent (Cursor / Copilot / other) at `AGENTS.md` and/or skill folders
 
 ## When to use which skill
 
@@ -106,7 +132,8 @@ later once feedback lands - see [ROADMAP.md](./ROADMAP.md).
 - Instructions stay concise; details live in `templates.md` / `examples.md`
 - Examples use fictional identities only (`Sample…` / `Test…`)
 - No real operational people data in this repo
-- Path checks and gitleaks complement each other - neither replaces the other
+- Path checks and gitleaks complement each other — neither replaces the other
+- Installer preference: **npx first**, `install.sh` alternate, manual always available
 
 ## Community
 
@@ -117,10 +144,10 @@ later once feedback lands - see [ROADMAP.md](./ROADMAP.md).
 | [SECURITY.md](./SECURITY.md) | Private vulnerability / leak reporting |
 | [ROADMAP.md](./ROADMAP.md) | What’s next |
 
-Issues and PRs welcome - catalog gaps, path false positives/negatives, stack
+Issues and PRs welcome — catalog gaps, path false positives/negatives, stack
 presets, and agent/tool feedback. Keep contributions generic; never add real
 people data or live credentials.
 
 ## License
 
-MIT - Copyright (c) 2026 Sultonisky. See [LICENSE](./LICENSE).
+MIT — Copyright (c) 2026 Sultonisky. See [LICENSE](./LICENSE).
