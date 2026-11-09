@@ -3,6 +3,7 @@
 ## Now (v1) — portable core + friendly Cursor/Copilot paths
 
 - [x] Policy skill: `sensitive-data-git`
+- [x] Safe-in-git skill: `safe-demo-data` (seeders/factories/fixtures + env guards)
 - [x] Path enforcement: `sensitive-path-guard` + starter script
 - [x] Secret scanning: `gitleaks-guard`
 - [x] Portable templates for `AGENTS.md`, CI, PR checklists
