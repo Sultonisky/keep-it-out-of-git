@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Demo: init, then path check fail, then pass</title>
+  <desc id="desc">Four-step walkthrough from npx init to a clean sensitive-path check.</desc>
+  <rect width="1120" height="560" fill="#0f1419"/>
+  <text x="40" y="42" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" font-weight="700">60-second demo</text>
+  <text x="40" y="68" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14">Install ’ files land ’ catch a dump ’ green check</text>
+
+  <!-- Panel 1 -->
+  <g transform="translate(40,92)">
+    <rect width="250" height="420" rx="12" fill="#161b22" stroke="#30363d"/>
+    <circle cx="28" cy="30" r="14" fill="#14532d"/>
+    <text x="28" y="35" text-anchor="middle" fill="#2dd4bf" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="700">1</text>
+    <text x="52" y="36" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700">npx init</text>
+    <rect x="16" y="58" width="218" height="340" rx="8" fill="#0d1117" stroke="#21262d"/>
+    <circle cx="36" cy="78" r="4" fill="#f87171"/>
+    <circle cx="52" cy="78" r="4" fill="#fbbf24"/>
+    <circle cx="68" cy="78" r="4" fill="#2dd4bf"/>
+    <text x="28" y="112" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="11">$</text>
+    <text x="42" y="112" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">npx & init</text>
+    <text x="28" y="140" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">wrote .agents/skills</text>
+    <text x="28" y="162" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">wrote path script</text>
+    <text x="28" y="184" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">wrote gitleaks.toml</text>
+    <text x="28" y="206" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">wrote CI workflow</text>
+    <text x="28" y="228" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">patched AGENTS.md</text>
+    <text x="28" y="260" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="11">done (portable core)</text>
+  </g>
+
+  <!-- Panel 2 -->
+  <g transform="translate(310,92)">
+    <rect width="250" height="420" rx="12" fill="#161b22" stroke="#30363d"/>
+    <circle cx="28" cy="30" r="14" fill="#14532d"/>
+    <text x="28" y="35" text-anchor="middle" fill="#2dd4bf" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="700">2</text>
+    <text x="52" y="36" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700">Files land</text>
+    <rect x="16" y="58" width="218" height="340" rx="8" fill="#0d1117" stroke="#21262d"/>
+    <text x="28" y="92" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="12" font-weight="700">my-repo/</text>
+    <text x="36" y="120" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">.agents/skills/</text>
+    <text x="36" y="144" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">scripts/check-&sh</text>
+    <text x="36" y="168" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">gitleaks.toml</text>
+    <text x="36" y="192" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">.github/workflows/</text>
+    <text x="52" y="216" fill="#94a3b8" font-family="ui-monospace, Consolas, monospace" font-size="11">sensitive-data.yml</text>
+    <text x="36" y="240" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">AGENTS.md</text>
+    <text x="28" y="280" fill="#64748b" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Untracked until you</text>
+    <text x="28" y="300" fill="#64748b" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">git add + commit/PR</text>
+  </g>
+
+  <!-- Panel 3 -->
+  <g transform="translate(580,92)">
+    <rect width="250" height="420" rx="12" fill="#161b22" stroke="#7f1d1d"/>
+    <circle cx="28" cy="30" r="14" fill="#7f1d1d"/>
+    <text x="28" y="35" text-anchor="middle" fill="#f87171" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="700">3</text>
+    <text x="52" y="36" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700">Path check FAIL</text>
+    <rect x="16" y="58" width="218" height="340" rx="8" fill="#0d1117" stroke="#3f1d1d"/>
+    <text x="28" y="112" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="11">$</text>
+    <text x="42" y="112" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">bash scripts/</text>
+    <text x="42" y="130" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">check-sensitive-</text>
+    <text x="42" y="148" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">paths.sh</text>
+    <text x="28" y="186" fill="#f87171" font-family="ui-monospace, Consolas, monospace" font-size="11">BLOCKED tracked</text>
+    <text x="28" y="204" fill="#f87171" font-family="ui-monospace, Consolas, monospace" font-size="11">path:</text>
+    <text x="28" y="226" fill="#fda4a4" font-family="ui-monospace, Consolas, monospace" font-size="11">data/employees-</text>
+    <text x="28" y="244" fill="#fda4a4" font-family="ui-monospace, Consolas, monospace" font-size="11">export.xlsx</text>
+    <text x="28" y="280" fill="#f87171" font-family="ui-monospace, Consolas, monospace" font-size="12" font-weight="700">exit 1</text>
+    <text x="28" y="316" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Move file to private</text>
+    <text x="28" y="336" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">storage · unstage</text>
+  </g>
+
+  <!-- Panel 4 -->
+  <g transform="translate(850,92)">
+    <rect width="230" height="420" rx="12" fill="#161b22" stroke="#14532d"/>
+    <circle cx="28" cy="30" r="14" fill="#14532d"/>
+    <text x="28" y="35" text-anchor="middle" fill="#2dd4bf" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="700">4</text>
+    <text x="52" y="36" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700">Path check PASS</text>
+    <rect x="16" y="58" width="198" height="340" rx="8" fill="#0d1117" stroke="#14532d"/>
+    <text x="28" y="112" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="11">$</text>
+    <text x="42" y="112" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">bash scripts/</text>
+    <text x="42" y="130" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">check-sensitive-</text>
+    <text x="42" y="148" fill="#e2e8f0" font-family="ui-monospace, Consolas, monospace" font-size="11">paths.sh</text>
+    <text x="28" y="196" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="12" font-weight="700">Sensitive-path</text>
+    <text x="28" y="216" fill="#2dd4bf" font-family="ui-monospace, Consolas, monospace" font-size="12" font-weight="700">check passed.</text>
+    <text x="28" y="260" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">CI can run the</text>
+    <text x="28" y="280" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">same check +</text>
+    <text x="28" y="300" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">gitleaks detect</text>
+    <rect x="28" y="330" width="160" height="36" rx="8" fill="#0d2818" stroke="#14532d"/>
+    <text x="108" y="353" text-anchor="middle" fill="#2dd4bf" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700">Ready to PR</text>
+  </g>
+</svg>

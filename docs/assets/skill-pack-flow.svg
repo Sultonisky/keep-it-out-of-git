@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">How the four skills work together</title>
+  <desc id="desc">Policy skills decide keep-out vs safe-in; guard skills enforce paths and secret content.</desc>
+  <rect width="960" height="420" fill="#0f1419"/>
+  <text x="40" y="44" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="26" font-weight="700">Four skills, one rule</text>
+  <text x="40" y="72" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14">Policy decides. Guards enforce. Use them together.</text>
+
+  <!-- Policy row -->
+  <rect x="40" y="100" width="420" height="120" rx="12" fill="#1c1210" stroke="#f87171"/>
+  <text x="60" y="132" fill="#f87171" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1">KEEP OUT</text>
+  <text x="60" y="160" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700">sensitive-data-git</text>
+  <text x="60" y="188" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Real people data, credentials, dumps</text>
+  <text x="60" y="208" fill="#64748b" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">’ private / gitignored storage</text>
+
+  <rect x="500" y="100" width="420" height="120" rx="12" fill="#0d2818" stroke="#2dd4bf"/>
+  <text x="520" y="132" fill="#2dd4bf" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1">SAFE IN GIT</text>
+  <text x="520" y="160" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700">safe-demo-data</text>
+  <text x="520" y="188" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Fictional Sample/Test seeders &amp; fixtures</text>
+  <text x="520" y="208" fill="#64748b" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">’ env guards, no prod secrets in source</text>
+
+  <!-- Arrow down -->
+  <path d="M480 232 v28" stroke="#475569" stroke-width="2" fill="none"/>
+  <path d="M472 252 l8 12 8-12" fill="#475569"/>
+
+  <!-- Guards row -->
+  <rect x="40" y="280" width="420" height="110" rx="12" fill="#161b22" stroke="#30363d"/>
+  <text x="60" y="312" fill="#fbbf24" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1">ENFORCE PATHS</text>
+  <text x="60" y="340" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700">sensitive-path-guard</text>
+  <text x="60" y="368" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Blocks tracked .env / dumps / private dirs</text>
+
+  <rect x="500" y="280" width="420" height="110" rx="12" fill="#161b22" stroke="#30363d"/>
+  <text x="520" y="312" fill="#60a5fa" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1">ENFORCE CONTENT</text>
+  <text x="520" y="340" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700">gitleaks-guard</text>
+  <text x="520" y="368" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">Scans file contents for secret-shaped leaks</text>
+</svg>
