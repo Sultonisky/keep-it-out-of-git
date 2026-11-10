@@ -31,7 +31,7 @@ repo enforces them even when someone forgets.
 <summary>Static storyboard (if the GIF does not animate)</summary>
 
 <p align="center">
-  <img src="./docs/assets/demo-init-to-pass.svg" alt="Four-step static demo: init, files land, fail, pass" width="920" />
+  <img src="./docs/assets/demo-init-to-pass.png" alt="Four-step static demo: init, files land, fail, pass" width="920" />
 </p>
 
 </details>
@@ -74,7 +74,7 @@ scratch.
 ## After `init` — what lands in the repo
 
 <p align="center">
-  <img src="./docs/assets/what-you-get.svg" alt="Files written by default init and the outcomes they deliver" width="920" />
+  <img src="./docs/assets/what-you-get.png" alt="Files written by default init and the outcomes they deliver" width="920" />
 </p>
 
 **Default `npx … init` writes the portable core:**
@@ -101,7 +101,7 @@ Optional flags also copy skills into `.cursor/skills/` and/or a PR template.
 ## How the four skills fit
 
 <p align="center">
-  <img src="./docs/assets/skill-pack-flow.svg" alt="sensitive-data-git and safe-demo-data as policy; sensitive-path-guard and gitleaks-guard as enforcement" width="920" />
+  <img src="./docs/assets/skill-pack-flow.png" alt="sensitive-data-git and safe-demo-data as policy; sensitive-path-guard and gitleaks-guard as enforcement" width="920" />
 </p>
 
 ```mermaid
