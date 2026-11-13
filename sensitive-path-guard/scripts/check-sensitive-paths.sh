@@ -23,7 +23,13 @@ blocked_regexes=(
   'credentials\.json$'
   '(^|/).*credentials.*\.(json|ini|yml|yaml)$'
   '\.(pem|p12|pfx)$'
-  '(^|/)id_(rsa|ed25519|ecdsa)(|\.pub)$'
+  # SSH / VPS / deploy keys — private AND public stay out of git
+  # (use GitHub Actions secrets / local SSH agent; never commit "just the .pub")
+  '(^|/)\.ssh/'
+  '(^|/)id_(rsa|ed25519|ecdsa|dsa)(|\.pub)$'
+  '(^|/).*_(rsa|ed25519|ecdsa|dsa)(|\.pub)$'
+  '(^|/)(deploy|vps|server|github|ci|actions?)[_-]?.*(key|ssh)(|\.pub)$'
+  '(^|/).*ed25519.*\.(key|pem|pub)$'
   '(^|/)\.kube/config$'
   'kubeconfig'
   '\.tfstate(|\.backup)$'
