@@ -30,6 +30,37 @@ fully fictional. Full taxonomy: [sensitive-catalog.md](sensitive-catalog.md).
 4. **Never log** secrets or identity payloads (see redaction list).
 5. **On leak:** rotate secrets, remove from the working tree, stop. Do **not**
    rewrite git history unless the user explicitly asks.
+6. **User-private material is off-limits to agents** — see below (SSH/VPS keys,
+   live `.env`, cloud creds). Do not hunt, open, quote, or “helpfully” surface them.
+
+## User-private material — agents must skip
+
+These belong to the human / ops host, not the agent context. If found or
+requested in a way that would expose them:
+
+**Do not**
+
+- Search the disk for `id_ed25519`, `id_rsa`, `.ssh/`, deploy/vps `*.pub`/key files
+  “to wire deploy”
+- `Read` / `cat` / print private **or** matching public deploy keys
+- Paste key bodies (or fingerprints that identify a live host key) into chat,
+  commits, docs, CI logs, or screenshots
+- Copy keys into the repo “temporarily” or into workflow YAML
+- Ask the user to paste a private key into the chat
+
+**Do**
+
+- **Skip** those paths immediately; treat as private user property
+- Tell the user deploy/VPS auth must stay in **GitHub Actions secrets** (or the
+  local SSH agent) — never in git
+- If a key is already tracked: instruct `git rm --cached`, rotate if exposed,
+  strengthen `.gitignore` — still **do not** open or reprint the key material
+- Continue the task using secret **names** / docs only (e.g. `SSH_PRIVATE_KEY`
+  Actions secret), never the value
+
+Same skip rule applies to live `.env`, cloud credential JSON, and other
+catalog §2/§9 secrets: detect for guard purposes if needed, but do not load or
+echo contents.
 
 ## Prefer local private storage — never git
 
@@ -69,7 +100,7 @@ Block real instances of **any** of these categories (details in
 | Category | Examples agents should watch for |
 |---|---|
 | Identity / contact | Names, emails, phones, addresses, national IDs, passports |
-| Auth / secrets | Passwords, PINs, JWT, API keys, private keys, `.env`, cloud creds |
+| Auth / secrets | Passwords, PINs, JWT, API keys, `.env`, cloud creds, SSH/VPS keys (**private and `.pub`**) |
 | Financial | Bank/IBAN, card data, payroll, invoices naming real customers |
 | Health / biometrics | Diagnoses, medical IDs, face embeddings, raw biometric payloads |
 | CRM / comms | Customer exports, ticket/chat/email dumps with real users |
@@ -78,7 +109,8 @@ Block real instances of **any** of these categories (details in
 | Infra dumps | SQL/Redis/ES dumps, TF state, kube secrets, HAR/CI logs with tokens |
 
 **High-risk shapes:** `xlsx/csv/sql/dump/parquet`, `.env*`, `*.pem`/`*.key`,
-`*credentials*.json`, `.har`, heap/core dumps — guilty until proven anonymized.
+`id_ed25519` / `id_ed25519.pub` / deploy key pairs, `*credentials*.json`, `.har`,
+heap/core dumps — guilty until proven anonymized.
 
 ## Never commit
 
@@ -88,6 +120,9 @@ the file is fully anonymized / non-secret:
 - Spreadsheets or data files with real people or regulated payloads
 - Seed / snapshot JSON with real identities or live secrets
 - Credentials and key material (see catalog §2 and §9)
+- **SSH / VPS / deploy key pairs** (`id_ed25519`, `id_rsa`, matching `.pub`,
+  `.ssh/`, deploy/vps key files) — no exceptions for “public key only”; keep
+  deploy material in **GitHub Actions secrets** (or the host SSH agent), not git
 - Backups and DB/search/queue dumps
 - Deploy/CI logs, screenshots, or HAR files that expose PII or secrets
 
@@ -138,7 +173,8 @@ Before any commit or PR the user requests:
 - [ ] Staged set has no blocked people-data files
 - [ ] No hard-coded real PII in source, tests, or seeders
 - [ ] New fixtures use fictional identities only
-- [ ] No credential files (`.env`, keys, tokens) staged
+- [ ] No credential files (`.env`, SSH/VPS keys, tokens) staged
+- [ ] Agent did not open/print user-private keys or live secret files
 - [ ] Logs/audit paths do not print identity or secret values
 
 If blocked material is found: **stop**, warn the user, and keep it out of the
