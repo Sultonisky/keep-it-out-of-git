@@ -189,6 +189,10 @@ must complete project-specific setup:
 
 - Path check: \`bash scripts/check-sensitive-paths.sh\` (Git Bash/WSL on Windows)
 - Secret scan: gitleaks (see \`gitleaks.toml\` / CI) when present
+- Never commit SSH/VPS/deploy keys (\`id_ed25519\`, \`.pub\`, \`.ssh/\`) — use Actions secrets
+- **Agents must skip** user-private keys: do not search, open, or print
+  \`id_ed25519\` / \`.pub\` / \`.ssh/\` / live \`.env\` / cloud cred JSON. Point to
+  Actions secret **names** only — never ask the user to paste private key material
 - Skills: \`.agents/skills/\` (optional \`.cursor/skills/\`)
 
 ### Safe demo data
@@ -253,7 +257,9 @@ ${skippedList}
 7. **Safe demo data** — Fix seeders/factories (fictional, refuse production, env
    passwords). Init never rewrites app seeders.
 8. **Copilot** — Follow \`.github/copilot-instructions.md\` Keep It Out of Git block.
-9. **Commit** — \`git add\` + PR; ask before force-overwriting tuned files.
+9. **User-private keys** — Never hunt/open/print SSH/VPS/deploy keys (\`id_ed25519\`,
+   \`.pub\`, \`.ssh/\`) or live \`.env\` / cloud creds. Skip; use Actions secret names only.
+10. **Commit** — \`git add\` + PR; ask before force-overwriting tuned files.
 
 ## Skills to read
 
@@ -331,6 +337,8 @@ Bootstrap may be incomplete if this repo already had AGENTS/CI/gitleaks.
 4. Skills live under \`.agents/skills/\` (sensitive-data-git, safe-demo-data,
    sensitive-path-guard, gitleaks-guard). Read those SKILL.md files when relevant.
 5. Ask before overwriting human-tuned AGENTS/CI/gitleaks.
+6. **User-private keys:** never search/open/print \`id_ed25519\`, \`.pub\`, \`.ssh/\`,
+   live \`.env\`, or cloud cred JSON. Deploy auth stays in GitHub Actions secrets.
 ${COPILOT_MARKER_END}
 `;
 }
