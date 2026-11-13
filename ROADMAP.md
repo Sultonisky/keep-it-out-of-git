@@ -10,6 +10,8 @@
 - [x] Default `init` = portable core (AGENTS + gitleaks + CI workflow); `--minimal` for bare
 - [x] Post-install agent brief (`.agents/keep-it-out-of-git.POST_INSTALL.md` + AGENTS checklist)
 - [x] Copilot-native instructions + INSTALL.json fingerprint; document npx `@main` cache bust
+- [x] Block SSH/VPS/deploy key pairs (`id_ed25519` + `.pub`, `.ssh/`) — use Actions secrets
+- [x] Agent skip/refuse: do not hunt, open, or print user-private SSH/VPS keys or live secrets
 - [x] Portable templates for `AGENTS.md`, CI, PR checklists
 - [x] Shared `.github/pull_request_template.md` drop-in (sensitive-data / security)
 - [x] Document additive Cursor / Copilot wiring (skills, copilot-instructions)
