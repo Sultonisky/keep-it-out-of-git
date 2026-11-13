@@ -43,7 +43,7 @@ see [`sensitive-catalog.md`](../sensitive-data-git/sensitive-catalog.md).
 | Guard | Catches |
 |---|---|
 | [`sensitive-path-guard`](../sensitive-path-guard/SKILL.md) | Tracked dumps, `.env`, people xlsx/csv under bad paths |
-| This skill (gitleaks) | API keys, tokens, private keys, high-entropy secrets in content |
+| This skill (gitleaks) | API keys, tokens, private keys (incl. OpenSSH/`ed25519` bodies), high-entropy secrets |
 | [`sensitive-data-git`](../sensitive-data-git/SKILL.md) | Policy + anonymized fixtures (PII that is not a secret regex hit) |
 
 Use all three when possible.
