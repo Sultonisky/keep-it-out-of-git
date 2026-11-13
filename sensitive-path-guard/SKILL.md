@@ -74,7 +74,12 @@ lines and exit code `1`.
 
 - `.env*` (except allowlisted `.env.example`), `bak/`, `*.sql` / `*.dump` / `*.backup`
 - Tabular dumps under `data/`, `exports/`, `imports/`, `uploads/`
-- Credential/key material (`credentials*.json`, `*.pem`/`*.p12`, `id_rsa`, kubeconfig, `*.tfstate`)
+- Credential/key material (`credentials*.json`, `*.pem`/`*.p12`, kubeconfig, `*.tfstate`)
+- **SSH / VPS / deploy keys** — `id_ed25519` / `id_rsa` **and** matching `.pub`,
+  `.ssh/`, `*_ed25519`, deploy/vps key names (private **and** public). Keep them in
+  GitHub Actions secrets / local agent — never “just commit the public key”.
+  **Agents must skip:** do not search for, open, or print these files; they are
+  user-private. Point to Actions secrets instead.
 - Private storage dirs (`storage/app/private/`, `storage|var|.data/private/`, `secrets/`)
 - Ops artifacts (`.har`, deploy/ci logs, heap/core dumps)
 
