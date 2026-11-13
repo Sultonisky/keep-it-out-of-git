@@ -24,6 +24,9 @@ artifacts across domains. Add product-specific paths only when needed:
 # Domain exports with stable filenames
 '(^|/)billing/exports/.+\.csv$'
 '(^|/)clinical/exports/.+\.zip$'
+
+# Extra SSH naming used by this product (starter already covers id_ed25519 + .pub)
+'(^|/)keys/vps_.*(|\.pub)$'
 ```
 
 Keep the private path in sync with `AGENTS.md` (see `sensitive-data-git` stack

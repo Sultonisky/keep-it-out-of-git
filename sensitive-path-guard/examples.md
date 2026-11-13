@@ -32,6 +32,23 @@ Fix:
 3. Confirm `.gitignore` includes `.env`
 4. Keep `.env.example` with placeholders only
 
+## Failure: SSH / VPS ed25519 keys (private or public)
+
+```text
+BLOCKED tracked path: deploy/id_ed25519
+BLOCKED tracked path: deploy/id_ed25519.pub
+```
+
+Fix:
+
+1. `git rm --cached` both private and public key files
+2. Store the deploy key in **GitHub Actions secrets** (or the server/agent), not the repo
+3. Ensure `.gitignore` covers `.ssh/`, `id_ed25519`, `id_ed25519.pub`, `*_ed25519`, `*_ed25519.pub`
+4. Do not re-add “just the `.pub`” — same policy as the private key
+5. **Agents:** do not `Read`/print the key to “confirm” — skip contents; only fix paths/ignores
+
+Gitleaks (content scan) should also catch OpenSSH private key bodies even if renamed.
+
 ## Intentional stub needs allowlist
 
 Repo must track anonymized `data/reference_stub.json`.
