@@ -176,6 +176,26 @@ npx github:Sultonisky/keep-it-out-of-git init --dry-run
 npx github:Sultonisky/keep-it-out-of-git --help
 ```
 
+### Update an existing install
+
+**Do not** delete the whole project or wipe the pack by hand. Refresh managed
+files:
+
+```bash
+# from the project that already ran init
+npx --yes github:Sultonisky/keep-it-out-of-git@main update
+```
+
+`update` = `init --force` for pack-managed paths (skills, path script, marker
+blocks, starter gitleaks/CI/POST_INSTALL). It does **not** delete your app code.
+
+| Preserved | Overwritten / refreshed |
+|---|---|
+| Your app source, existing `ci-cd.yml`, filled **This repo uses** path in AGENTS | `.agents/skills/*`, `scripts/check-sensitive-paths.sh`, Keep It Out of Git marker blocks, starter `gitleaks.toml` / `sensitive-data.yml` if present |
+
+If you previously passed `--cursor` / `--pr` / `--all`, pass the same flags again
+on `update`. Then re-read `POST_INSTALL.md` / `INSTALL.json` and commit the diff.
+
 | Flag | Effect |
 |---|---|
 | *(default)* | Portable core (table above) |
