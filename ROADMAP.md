@@ -33,7 +33,8 @@ Cursor/Copilot get smoother presets without locking others out.
 - [ ] Feedback-driven wording fixes in `SKILL.md` / templates
 - [ ] Keep Cursor/Copilot template snippets in sync with the core (no policy fork)
 - [ ] Publish `keep-it-out-of-git` to npm (so `npx keep-it-out-of-git` works without GitHub URL)
-- [ ] Installer `update` command (refresh skills without clobbering local edits)
+- [x] Installer `update` command (refresh managed files; preserve AGENTS private-storage line)
+- [ ] Smarter update: merge local path-script regex customizations instead of full overwrite
 
 ## Later — deeper tool packs (same rules, richer packaging)
 
