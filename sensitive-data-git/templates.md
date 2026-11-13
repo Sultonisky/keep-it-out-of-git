@@ -31,6 +31,7 @@ Do **not** place real people or secret files under tracked `data/`, `tests/`,
 - Financial or health payloads naming real individuals
 - Seed/snapshot JSON with real identities or live secrets
 - `.env*`, private keys, tokens, cloud credential JSON, tfstate, kubeconfigs
+- SSH/VPS/deploy key pairs (`id_ed25519`, matching `.pub`, `.ssh/`) — use Actions secrets
 - DB/search/queue dumps, HAR/CI/deploy logs, heap/core dumps with PII/secrets
 
 ### Allowed in git
@@ -51,6 +52,13 @@ Do **not** place real people or secret files under tracked `data/`, `tests/`,
   biometric / identity-document payloads
 - If secrets leaked into git: rotate + remove from tree; do not rewrite history
   unless explicitly requested
+
+### Agents: user-private material (skip)
+
+- Do **not** search, open, or print SSH/VPS/deploy keys (`id_ed25519`, `.pub`,
+  `.ssh/`), live `.env`, or cloud credential JSON
+- Deploy auth belongs in GitHub Actions secrets / local SSH agent — never git
+- If keys are tracked: untrack + rotate guidance only — do not load key contents
 ```
 
 ## Cursor rule (`.cursor/rules/sensitive-data-git.mdc`) — additive

@@ -26,7 +26,8 @@ treat it as sensitive.
 | Passwords, password hashes (even “test” copies of prod), PINs, recovery codes | Fake only |
 | Session cookies, JWT, refresh tokens, CSRF secrets | |
 | API keys, webhook secrets, OAuth client secrets | Placeholders in `.env.example` |
-| Private keys (`*.pem`, `*.key`, `id_rsa`), client certs, PKCS12 | |
+| Private keys (`*.pem`, `*.key`, `id_rsa`, `id_ed25519`), client certs, PKCS12 | |
+| SSH **public** keys that belong with local/deploy identities (`id_ed25519.pub`, deploy `*.pub`) | Do not commit “just the .pub” — store deploy material in GitHub Actions secrets. **Agents must skip** reading/searching these files |
 | Cloud credential JSON / INI (AWS, GCP, Azure, etc.) | |
 | MFA seeds / TOTP secrets, SSH host keys | |
 | `.env`, `.env.*` (except documented `.env.example`) | |
@@ -104,7 +105,9 @@ Treat as **guilty until proven anonymized** when tracked under app trees:
 .xlsx .xls .xlsm .ods .csv .tsv
 .sql .dump .backup .bak .parquet .avro
 .env .env.*  (except .env.example)
-.pem .key .p12 .pfx  id_rsa  id_ed25519
+.pem .key .p12 .pfx
+id_rsa  id_rsa.pub  id_ed25519  id_ed25519.pub  *_ed25519  *_ed25519.pub
+deploy_key  deploy_key.pub  vps_key  vps_key.pub
 *credentials*.json  *service*account*.json  *.kubeconfig
 .har  .pcap  heapdump*  core.*
 ```
@@ -112,6 +115,7 @@ Treat as **guilty until proven anonymized** when tracked under app trees:
 Directories that usually must stay gitignored if they hold real ops data:
 
 ```text
+.ssh/
 storage/private/  storage/app/private/  var/private/  .data/private/
 credentials/  secrets/  bak/  deploy-logs/  ci-logs/
 tmp/imports/  tmp/exports/  uploads/private/
@@ -129,6 +133,7 @@ tmp/imports/  tmp/exports/  uploads/private/
 | Marketplaces | Seller/buyer PII, dispute attachments |
 | IoT / mobile | Device + user join tables, crash logs with tokens |
 | Internal tools | “Temp” Excel from ops, Slack export zips, screenshot PNGs of dashboards |
+| VPS / deploy | Local `id_ed25519` / `id_ed25519.pub`, deploy keys “for CI” — use Actions secrets instead |
 
 ## Safe substitutes (all domains)
 
