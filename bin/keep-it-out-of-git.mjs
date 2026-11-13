@@ -48,24 +48,28 @@ Alternate (Unix / Git Bash):
 
 Commands:
   init      Install portable core into the current project
+  update    Refresh managed pack files (same as init --force)
   help      Show this help
 
-Default init (portable core):
+Default init / update (portable core):
   skills → .agents/skills/
   path script → scripts/check-sensitive-paths.sh
-  AGENTS.md block (marker-managed)
+  AGENTS.md block (marker-managed; preserves filled private-storage path on update)
   .github/copilot-instructions.md block (for GitHub Copilot discovery)
   gitleaks.toml
   .github/workflows/sensitive-data.yml
   .agents/keep-it-out-of-git.POST_INSTALL.md  (agent must finish setup)
   .agents/keep-it-out-of-git.INSTALL.json     (what this run wrote/skipped)
 
+Update (recommended for existing installs):
+  npx --yes github:Sultonisky/keep-it-out-of-git@main update
+
 Options:
   --minimal      Skills + path script only
   --cursor       Also copy skills → .cursor/skills/
   --pr           Also copy .github/pull_request_template.md
   --all          Portable core + --cursor + --pr
-  --force        Overwrite existing managed files
+  --force        Overwrite existing managed files (implied by update)
   --dry-run      Print actions without writing
   --target DIR   Project root (default: cwd)
 `);
@@ -156,7 +160,25 @@ function copyDir(src, dest, { force, dryRun }) {
   return true;
 }
 
-function agentsBlock() {
+function defaultPrivateStorageLine() {
+  return "- **This repo uses:** `<FILL: e.g. storage/app/private/ or storage/private/>`";
+}
+
+function extractPrivateStorageLine(agentsMarkdown) {
+  if (!agentsMarkdown) return null;
+  const start = agentsMarkdown.indexOf(AGENTS_MARKER_START);
+  const end = agentsMarkdown.indexOf(AGENTS_MARKER_END);
+  if (start === -1 || end === -1 || end <= start) return null;
+  const block = agentsMarkdown.slice(start, end);
+  const match = block.match(/^- \*\*This repo uses:\*\*.+$/m);
+  if (!match) return null;
+  const line = match[0];
+  if (line.includes("<FILL:")) return null;
+  return line;
+}
+
+function agentsBlock(privateStorageLine) {
+  const storageLine = privateStorageLine || defaultPrivateStorageLine();
   return `${AGENTS_MARKER_START}
 ## Keep It Out of Git
 
@@ -165,9 +187,9 @@ git only when fictional and environment-guarded.
 
 ### Agent: post-install setup required
 
-\`npx … init\` is only a **bootstrap**. It may skip files that already existed.
-Before treating this pack as fully active, the coding agent for **this repo**
-must complete project-specific setup:
+\`npx … init\` / \`update\` is only a **bootstrap**. It may skip files that already
+existed (unless \`update\` / \`--force\`). Before treating this pack as fully active,
+the coding agent for **this repo** must complete project-specific setup:
 
 1. Read \`.agents/keep-it-out-of-git.POST_INSTALL.md\` (written by the installer)
 2. Audit what was installed vs skipped (AGENTS, gitleaks, CI, path script, skills)
@@ -181,7 +203,7 @@ must complete project-specific setup:
 
 ### Private storage (not git)
 
-- **This repo uses:** \`<FILL: e.g. storage/app/private/ or storage/private/>\`
+${storageLine}
 - Never force-add gitignored private storage
 - Real dumps/imports stay local; use anonymized \`Sample…\` / \`Test…\` / Faker in tests
 
@@ -313,9 +335,12 @@ function upsertMarkedFile(file, block, startMarker, endMarker, { force, dryRun }
 }
 
 function writeAgentsMd(target, opts) {
+  const file = path.join(target, "AGENTS.md");
+  const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  const preserved = extractPrivateStorageLine(existing);
   return upsertMarkedFile(
-    path.join(target, "AGENTS.md"),
-    agentsBlock(),
+    file,
+    agentsBlock(preserved),
     AGENTS_MARKER_START,
     AGENTS_MARKER_END,
     opts,
@@ -661,6 +686,14 @@ function main() {
   }
 
   if (args.command === "init") {
+    initProject(args);
+    return;
+  }
+
+  if (args.command === "update") {
+    // Refresh managed pack files without requiring users to delete/reinstall.
+    args.force = true;
+    console.log("Keep It Out of Git — update (refresh managed files with --force)\n");
     initProject(args);
     return;
   }
