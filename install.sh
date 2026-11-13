@@ -18,8 +18,9 @@ if command -v node >/dev/null 2>&1; then
 fi
 
 echo "Node.js not found — using bash fallback (skills + path script only)."
-echo "For full portable core (AGENTS.md + gitleaks.toml + CI workflow), prefer:"
-echo "  npx github:Sultonisky/keep-it-out-of-git init"
+echo "For full portable core / updates, prefer:"
+echo "  npx --yes github:Sultonisky/keep-it-out-of-git@main init"
+echo "  npx --yes github:Sultonisky/keep-it-out-of-git@main update"
 echo
 
 TARGET="${PWD}"
