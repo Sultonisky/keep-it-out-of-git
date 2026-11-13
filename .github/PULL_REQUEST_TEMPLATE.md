@@ -23,6 +23,7 @@
 ## Sensitive data / security
 
 - [ ] No real people-data, financial/health dumps, credentials, `bak/`, or hard-coded real PII
+- [ ] No SSH/VPS/deploy keys in git (`id_ed25519`, `.pub`, `.ssh/` — use Actions secrets)
 - [ ] Sensitive operational files stay in gitignored private storage (not git)
 - [ ] New/changed examples use `Sample…` / `Test…` / Faker only
 - [ ] Demo seeder guidance includes production refuse + env-based secrets
