@@ -39,8 +39,11 @@ Private-dir block patterns are **stack-agnostic defaults** (Laravel
    live in git.
 4. **Never weaken** the script to land a dump “just this once”.
 5. **Do not `git add -f`** gitignored private storage.
-6. On failure: move the file to gitignored storage (or delete), unstage, fix
-   `.gitignore` if needed, re-run.
+6. On a real sensitive-file failure, give the complete recovery sequence:
+   move it out of tracked paths to gitignored private storage (or delete it),
+   remove the original path from Git's index, fix `.gitignore` if needed, and
+   rerun the path check. Do not stop at “delete or replace” or suggest a broad
+   path allowlist.
 
 ## Guard triad
 
@@ -111,9 +114,19 @@ When adding or changing the path guard:
 See [examples.md](examples.md). Short version:
 
 1. Read the blocked path + matched regex
-2. If real sensitive file → untrack, move to gitignored storage, keep out of git
-3. If intentional anonymized stub → add a **narrow** allowed regex
-4. Re-run the script; do not skip CI
+2. If it is real sensitive data, do not open or print its contents. If it must
+   be retained, move it out of tracked paths to the repo's documented,
+   gitignored private directory (or outside the repo); otherwise delete it.
+3. Ensure the private destination is ignored, then remove the original tracked
+   path from the index with `git rm --cached -- <tracked-path>`. For a path
+   already tracked in `HEAD`, do not use `git restore --staged` as the fix: that
+   restores the index entry instead of removing the tracked path.
+4. If the file was committed or pushed, explain that removing it from the
+   current index does not erase Git history; follow the repo's incident policy.
+   Do not rewrite history unless explicitly asked.
+5. Re-run `bash scripts/check-sensitive-paths.sh` and confirm the blocked path
+   is gone. Never allowlist real sensitive data; only use a narrow allowlist for
+   a verified anonymized reference file.
 
 ## Install into a repo
 
