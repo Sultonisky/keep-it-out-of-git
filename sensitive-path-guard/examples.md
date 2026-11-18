@@ -19,6 +19,26 @@ bash scripts/check-sensitive-paths.sh
 
 Do not add an allowlist for private storage.
 
+## Failure: tracked customer export
+
+```text
+BLOCKED tracked path: data/customer-export.csv
+```
+
+Do not open or print the file contents. If the real export is still needed,
+move it to the repo's documented private directory and confirm that destination
+is gitignored; otherwise delete it. Then remove the original path from Git's
+index and rerun the check:
+
+```bash
+git rm --cached -- data/customer-export.csv
+bash scripts/check-sensitive-paths.sh
+```
+
+For a path already tracked in `HEAD`, `git restore --staged` is not a substitute:
+it restores the index entry instead of removing the path from Git's index. Do
+not allowlist the export or its directory.
+
 ## Failure: tracked `.env`
 
 ```text
