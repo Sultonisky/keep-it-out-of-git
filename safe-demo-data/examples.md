@@ -5,7 +5,7 @@
 | Bad | Good |
 |---|---|
 | Name/email copied from staging | `Sample User One` / `sample.user.one@example.com` |
-| Prod password in seeder source | `config('seeding.initial_user_password')` from env |
+| Prod password in seeder source | `config('seeding.demo_user_password')` from local env |
 | Demo seeder runs on production deploy | `isProduction()` → throw; orchestrator skips demo |
 | `User::create` from tracked `customers_prod.csv` | Import command + gitignored private file |
 | Factory uses “real looking” national IDs from a dump | Documented fake pattern / Faker |
@@ -15,13 +15,44 @@
 **Good**
 
 ```php
+// config/seeding.php
+return [
+    'demo_user_password' => env('SEED_DEMO_USER_PASSWORD'),
+];
+```
+
+```php
+// Inside DemoUsersSeeder::run(); User and Hash are imported.
 if (app()->isProduction()) {
     throw new RuntimeException('Demo seeder must not run in production.');
 }
-// Sample User One … fictional rows, firstOrCreate by stable fake email/id
+
+$password = config('seeding.demo_user_password');
+if (! is_string($password) || strlen($password) < 12) {
+    throw new RuntimeException('Set SEED_DEMO_USER_PASSWORD in the local environment (minimum 12 characters).');
+}
+
+foreach ([
+    ['email' => 'sample.user.one@example.com', 'name' => 'Sample User One'],
+    ['email' => 'sample.user.two@example.com', 'name' => 'Sample User Two'],
+] as $attributes) {
+    User::query()->firstOrCreate(
+        ['email' => $attributes['email']],
+        $attributes + ['password' => Hash::make($password)],
+    );
+}
 ```
 
-`DatabaseSeeder` calls it only when `env !== production`.
+Put `SEED_DEMO_USER_PASSWORD` in the local `.env` file; never add a password
+literal or fallback to the seeder. `firstOrCreate` keys each row by its stable,
+fictional email and leaves existing rows untouched on rerun. Keep the explicit
+guard in the seeder, and call it from `DatabaseSeeder` only outside production:
+
+```php
+if (config('app.env') !== 'production') {
+    $this->call(DemoUsersSeeder::class);
+}
+```
 
 **Bad**
 

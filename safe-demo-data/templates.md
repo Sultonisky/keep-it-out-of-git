@@ -26,6 +26,20 @@ Demo data **may** live in git only when it is fictional and guarded.
 
 ## Laravel sketch (demo seeder)
 
+Map the local-only password through config; do not put its value in source
+control:
+
+```php
+// config/seeding.php
+return [
+    'demo_user_password' => env('SEED_DEMO_USER_PASSWORD'),
+];
+```
+
+Set `SEED_DEMO_USER_PASSWORD` in the local `.env` file. Do not commit that file
+or provide a source-code fallback. The seeder fails clearly if the value is
+missing or too short.
+
 ```php
 <?php
 
@@ -33,6 +47,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 
 class DemoUsersSeeder extends Seeder
@@ -41,6 +56,12 @@ class DemoUsersSeeder extends Seeder
     {
         if (app()->isProduction()) {
             throw new RuntimeException('Demo seeder must not run in production.');
+        }
+
+        $password = config('seeding.demo_user_password');
+
+        if (! is_string($password) || strlen($password) < 12) {
+            throw new RuntimeException('Set SEED_DEMO_USER_PASSWORD in the local environment (minimum 12 characters).');
         }
 
         $rows = [
@@ -57,16 +78,23 @@ class DemoUsersSeeder extends Seeder
         foreach ($rows as $attributes) {
             User::query()->firstOrCreate(
                 ['email' => $attributes['email']],
-                $attributes + [
-                    'password' => config('seeding.demo_user_password', 'password-not-for-prod'),
-                ],
+                $attributes + ['password' => Hash::make($password)],
             );
         }
     }
 }
 ```
 
-Wire from `DatabaseSeeder` only when `config('app.env') !== 'production'`.
+`firstOrCreate` uses each fictional email as a stable key, so reruns do not
+overwrite existing user changes. Keep the seeder's production guard even when
+orchestration is guarded:
+
+```php
+// DatabaseSeeder::run()
+if (config('app.env') !== 'production') {
+    $this->call(DemoUsersSeeder::class);
+}
+```
 
 ## Nest / Prisma sketch
 
